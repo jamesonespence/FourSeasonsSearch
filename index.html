@@ -179,11 +179,36 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:11px}
 .hm td.c.sh::after{content:"";position:absolute;right:2px;top:2px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
 .hm td.bst{font-size:11px;color:var(--muted);padding:0 8px;white-space:nowrap;text-align:left;border-bottom:1px solid var(--line);min-width:96px}
 @media(max-width:700px){#wbar{top:30px;left:8px;right:8px}.pin b{font-size:9px}}
+
+.ib.wx{color:#e08a00;border-color:#e08a00}
+#wxmodal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:3000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+.wmbox{background:var(--surface);color:var(--fg);border-radius:14px;max-width:580px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.wmhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);z-index:2}
+.wmhead b{font-family:var(--f-disp);font-size:21px;letter-spacing:.03em;line-height:1.1}
+.wmhead .btn,.fhead .btn{width:auto;padding:6px 14px;flex:none}
+#wmbody{padding:8px 14px 16px}
+table.wmt{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.wmt th,.wmt td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.wmt th{font-size:11px;color:var(--muted);font-weight:600}
+.wmt th:first-child,.wmt td:first-child{text-align:left}
+.wmt tr.cur td{background:var(--track);font-weight:700}
+.wmt .wc{margin:0}
+#wxfull{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2500;background:var(--surface);color:var(--fg);display:flex;flex-direction:column}
+.fhead{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.fhead b{font-family:var(--f-disp);font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+#fbody{flex:1;overflow:auto;min-height:0}
+table.hm.big td.c{width:48px;min-width:48px;height:34px;font-size:14px}
+table.hm.big th.nm,table.hm.big td.nm{min-width:220px;max-width:220px;font-size:13px}
+table.hm.big thead th{font-size:12px;padding:8px 0}
+.hmc .btn{width:auto;padding:5px 10px;font-size:12px}
+.hmc label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.hmc label input{width:auto;margin:0;padding:0}
+@media(max-width:700px){.ibs{flex-wrap:wrap;justify-content:flex-end;max-width:150px}}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.11</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.12</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -194,6 +219,7 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:11px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.12</h4><ul><li>Weather tab: the heatmap now lists only the properties in the current map view (same checkbox as the list), and updates as you pan and zoom.</li><li>Full screen: a Full screen button on the Weather tab opens the heatmap over the whole page, with bigger cells.</li><li>Weather button (sun icon) on every property in the list and in popups: opens a quick 12-month view with a chart, a month-by-month table of highs, rain, humidity and score, best months, off-peak months and the 7-day forecast.</li></ul>
     <h4>v1.11</h4><ul><li>Weather: a Weather button on the map opens a month bar. Pick a month (or Now) and every pin turns into a weather score from poor (red) to great (green); the list sorts by it.</li><li>Good but off-peak: shows properties where the chosen month is nearly as good as their best stretch but outside it.</li><li>New Weather tab: a heatmap of all properties by month, with best months and off-peak dots. Tap a month to color the map, tap a name to open it.</li><li>Property popups now show today's weather, a 7-day forecast and a 12-month chart of highs and rain.</li><li>Units toggle (C or F) and an option to score ski resorts by snow instead of comfort.</li><li>Data: climate averages from NASA POWER (1991 to 2020), forecast from Open-Meteo. Scores are estimates from daytime highs, rain and humidity, and the climate grid is coarse, so mountains and coastlines can be off.</li></ul>
     <h4>v1.10</h4><ul><li>TripAdvisor links on phones now try to open the TripAdvisor app first and fall back to the website if the app does not open within a couple of seconds.</li></ul>
     <h4>v1.9</h4><ul><li>Map labels are now in English everywhere (the previous map showed local languages, for example Chinese place names). Dark mode now uses a true dark map. A Labels toggle in the header (Menu on phones) turns place names off.</li></ul>
@@ -221,6 +247,8 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:11px}
  <div id="wxnote"></div>
 </div></div></div>
 </div>
+<div id="wxfull" hidden><div class="fhead"><b>Weather by month</b><button type="button" class="btn" id="fclose">Close</button></div><div id="fbody"></div></div>
+<div id="wxmodal" hidden role="dialog" aria-modal="true" aria-labelledby="wmt"><div class="wmbox"><div class="wmhead"><b id="wmt"></b><button type="button" class="btn" id="wmclose">Close</button></div><div id="wmbody"></div></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
@@ -442,6 +470,7 @@ function btns(i){
   var d=D[i];
   return '<button type="button" class="ib fav'+(fav.has(d.n)?' on':'')+'" data-act="fav" data-i="'+i+'" title="Favorite" aria-pressed="'+fav.has(d.n)+'">&#9733;</button>'
    +'<button type="button" class="ib vis'+(vis.has(d.n)?' on':'')+'" data-act="vis" data-i="'+i+'" title="Visited" aria-pressed="'+vis.has(d.n)+'">&#10003;</button>'
+   +'<button type="button" class="ib wx" data-act="wx" data-i="'+i+'" title="12-month weather" aria-label="12-month weather">&#9728;</button>'
    +'<button type="button" class="ib trip'+(trip.indexOf(d.n)>=0?' on':'')+'" data-act="trip" data-i="'+i+'" title="Add to trip">'+(trip.indexOf(d.n)>=0?'In trip':'+ Trip')+'</button>';
 }
 function popHtml(i){
@@ -459,7 +488,7 @@ function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.52
 function setSheet(s){
   if(!isMob()){side.style.height='';sheetH=0;sheetState=s;return}
   sheetState=s;sheetH=stops()[s];side.style.height=sheetH+'px';
-  if(viewOnly)setTimeout(function(){renderList()},260);
+  if(viewOnly)setTimeout(function(){renderList();renderHeat()},260);
 }
 function ensureHalf(){if(isMob()&&sheetState==='peek')setSheet('half')}
 function fit(pts,maxZ){
@@ -556,6 +585,7 @@ document.addEventListener('click',function(e){
     if(a==='fav'){toggle(fav,'fs_fav',n);afterChange(i)}
     else if(a==='vis'){toggle(vis,'fs_vis',n);afterChange(i)}
     else if(a==='trip'){var k=trip.indexOf(n);if(k>=0)trip.splice(k,1);else trip.push(n);ls('fs_trip',trip);afterChange(i);tripChanged(true)}
+    else if(a==='wx'){openWxModal(i)}
     else if(a==='up'||a==='down'||a==='rm'){
       var p=+b.getAttribute('data-p');
       if(a==='rm')trip.splice(p,1);
@@ -679,47 +709,114 @@ lg.addTo(map);
 
 setSheet('peek');
 var vt=null;
-function listSoon(){clearTimeout(vt);vt=setTimeout(function(){if(viewOnly)renderList()},120)}
+function listSoon(){clearTimeout(vt);vt=setTimeout(function(){if(viewOnly){renderList();renderHeat()}},120)}
 map.on('moveend',listSoon);
 $('viewonly').checked=viewOnly;
-$('viewonly').onchange=function(){viewOnly=this.checked;ls('fs_view',viewOnly);renderList();$('list').scrollTop=0};
+$('viewonly').onchange=function(){viewOnly=this.checked;ls('fs_view',viewOnly);renderList();renderHeat();$('list').scrollTop=0};
 /* ---- weather UI ---- */
-var heatSort=ls('fs_hsort')||'name';
-function renderHeat(){
-  var box=$('wxsum');if(!box||view!=='wx')return;
-  var rows=filtered(false),i;
+var heatSort=ls('fs_hsort')||'name',fullOpen=false;
+function put(box,html){var t=box.scrollTop,l=box.scrollLeft;box.innerHTML=html;box.scrollTop=t;box.scrollLeft=l}
+function heatHtml(big){
+  var rows=filtered(true);
   if(heatSort==='month'&&typeof wxMonth==='number')rows.sort(function(x,y){var a=monthScore(D[x].n,wxMonth),b2=monthScore(D[y].n,wxMonth);return (b2==null?-1:b2)-(a==null?-1:a)});
   else if(heatSort==='best')rows.sort(function(x,y){var a=peakInfo(D[x].n),b2=peakInfo(D[y].n);return (b2?b2.max:-1)-(a?a.max:-1)});
   else rows.sort(function(x,y){return x-y});
-  var h='<div class="hmc">Sort <select id="hsort"><option value="name"'+(heatSort==='name'?' selected':'')+'>Region order</option><option value="month"'+(heatSort==='month'?' selected':'')+'>Selected month</option><option value="best"'+(heatSort==='best'?' selected':'')+'>Best score</option></select><span>Tap a month to color the map. A white dot marks good but off-peak.</span></div>';
+  var h='<div class="hmc">Sort <select class="hsort"><option value="name"'+(heatSort==='name'?' selected':'')+'>Region order</option><option value="month"'+(heatSort==='month'?' selected':'')+'>Selected month</option><option value="best"'+(heatSort==='best'?' selected':'')+'>Best score</option></select>'
+    +'<label><input type="checkbox" class="hview"'+(viewOnly?' checked':'')+'> Only what is in the map view</label>'
+    +(big?'':'<button type="button" class="btn hfull">Full screen</button>')
+    +'<span>'+rows.length+' of '+D.length+'</span></div>';
+  h+='<div class="hmc">Tap a month to color the map. A white dot marks good but off-peak.</div>';
   if(climState.loading)h+='<div class="hmc">Loading climate data '+(climState.done+climState.failed)+'/'+climState.total+'...</div>';
-  else if(climState.failed)h+='<div class="hmc">'+climState.failed+' places failed to load. <button type="button" class="linkbtn" id="hretry">Retry</button></div>';
-  h+='<table class="hm"><thead><tr><th class="nm">Property</th><th>Best</th>';
+  else if(climState.failed)h+='<div class="hmc">'+climState.failed+' places failed to load. <button type="button" class="linkbtn hretry">Retry</button></div>';
+  if(!rows.length)h+='<p class="note" style="padding:12px">No properties in this map view. Zoom out or untick "Only what is in the map view".</p>';
+  h+='<table class="hm'+(big?' big':'')+'"><thead><tr><th class="nm">Property</th><th>Best</th>';
   MN.forEach(function(m,k){h+='<th data-m="'+k+'"'+(wxOn&&wxMonth===k?' class="cur"':'')+'>'+m+'</th>'});
   h+='</tr></thead><tbody>';
   rows.forEach(function(ix){
     var n=D[ix].n,p=peakInfo(n);
     h+='<tr data-i="'+ix+'"><td class="nm" title="'+esc(n)+'">'+esc(n)+'</td><td class="bst">'+(p?p.best.map(function(x){return MN[x]}).join(', '):'-')+'</td>';
     for(var m=0;m<12;m++){
-      var s=p?p.sc[m]:null;
-      h+='<td class="c'+(s!=null&&p.sh[m]?' sh':'')+(wxOn&&wxMonth===m?' sel':'')+'" data-m="'+m+'"'+(s==null?'':' style="background:'+scColor(s)+';color:'+scText(s)+'"')+'>'+(s==null?'':s)+'</td>';
+      var sc=p?p.sc[m]:null;
+      h+='<td class="c'+(sc!=null&&p.sh[m]?' sh':'')+(wxOn&&wxMonth===m?' sel':'')+'" data-m="'+m+'"'+(sc==null?'':' style="background:'+scColor(sc)+';color:'+scText(sc)+'"')+'>'+(sc==null?'':sc)+'</td>';
     }
     h+='</tr>';
   });
-  box.innerHTML=h+'</tbody></table><div class="note" style="padding:8px 12px">Scores are estimates from daytime highs, rain and humidity (NASA POWER 1991-2020 averages, coarse grid).</div>';
-  $('hsort').onchange=function(){heatSort=this.value;ls('fs_hsort',heatSort);renderHeat()};
-  var r=$('hretry');if(r)r.onclick=function(){loadClimate()};
+  return h+'</tbody></table><div class="note" style="padding:8px 12px">Scores are estimates from daytime highs, rain and humidity (NASA POWER 1991-2020 averages, coarse grid).</div>';
 }
-$('wxsum').addEventListener('click',function(e){
+function bindHeat(box){
+  var s=box.querySelector('.hsort');if(s)s.onchange=function(){heatSort=this.value;ls('fs_hsort',heatSort);renderHeat()};
+  var v=box.querySelector('.hview');if(v)v.onchange=function(){viewOnly=this.checked;ls('fs_view',viewOnly);$('viewonly').checked=viewOnly;renderList();renderHeat()};
+  var f=box.querySelector('.hfull');if(f)f.onclick=openFull;
+  var r=box.querySelector('.hretry');if(r)r.onclick=function(){loadClimate()};
+}
+function renderHeat(){
+  if(view==='wx'){var a=$('wxsum');put(a,heatHtml(false));bindHeat(a)}
+  if(fullOpen){var f=$('fbody');put(f,heatHtml(true));bindHeat(f)}
+}
+function openFull(){fullOpen=true;$('wxfull').hidden=false;renderHeat();loadClimate()}
+function closeFull(){fullOpen=false;$('wxfull').hidden=true}
+$('fclose').onclick=closeFull;
+function heatClick(e){
   var th=e.target.closest('th[data-m]'),td=e.target.closest('td.c'),nm=e.target.closest('td.nm');
   var m=th?th.getAttribute('data-m'):(td?td.getAttribute('data-m'):null);
   if(m!==null){wxMonth=+m;ls('fs_wxm',wxMonth);if(!wxOn){wxOn=true;ls('fs_wx',true)}wxUi();wxRefresh();return}
-  if(nm){var tr=nm.closest('tr');if(tr)openProp(+tr.getAttribute('data-i'))}
-});
+  if(nm){var tr=nm.closest('tr');if(tr){if(fullOpen)closeFull();openProp(+tr.getAttribute('data-i'))}}
+}
+$('wxsum').addEventListener('click',heatClick);
+$('fbody').addEventListener('click',heatClick);
+
+/* ---- per-property 12-month weather dialog ---- */
+var wmIdx=null,wmErr=false;
+function fcHtml(n){
+  var f=fcast[n];
+  if(f&&f.daily)return '<div style="margin-top:8px"><b>Now</b> '+tf(f.cur.t)+' - '+(WC[f.cur.code]||'')+'</div><div class="fc">'+f.daily.date.map(function(dt,k){
+    var wd=new Date(dt+'T12:00:00').toLocaleDateString('en',{weekday:'short'});
+    return '<div>'+wd+'<b>'+tfs(f.daily.hi[k])+'</b>'+tfs(f.daily.lo[k])+'<br>'+((f.daily.rain[k]||0)>=1?Math.round(f.daily.rain[k])+' mm':'&nbsp;')+'</div>';
+  }).join('')+'</div>';
+  return '<div class="note" style="margin-top:8px">'+(fcFail[n]?'Forecast unavailable right now':'Loading forecast...')+'</div>';
+}
+function ensureClim(d){
+  if(clim[d.n])return Promise.resolve();
+  return fetchClim(d).then(function(o){clim[d.n]=o;scoreMemo={};peakMemo={};ls('fs_clim1',clim)});
+}
+function renderWxModal(){
+  if(wmIdx==null)return;
+  var d=D[wmIdx],n=d.n,c=clim[n],h='<div class="tyl">'+d.ty+' - '+esc(d.r)+'</div>';
+  if(!c){
+    h+='<p class="note">'+(wmErr?'Climate data could not be loaded. <button type="button" class="linkbtn" id="wmretry">Retry</button>':'Loading climate data...')+'</p>';
+  }else{
+    var p=peakInfo(n),cur=(wxOn&&typeof wxMonth==='number')?wxMonth:new Date().getMonth();
+    var off=[];for(var k=0;k<12;k++)if(p.sh[k])off.push(MN[k]);
+    h+='<p style="margin:6px 0">Best months: <b>'+p.best.map(function(x){return MN[x]}).join(', ')+'</b>'+(off.length?'<br>Good but off-peak: <b>'+off.join(', ')+'</b>':'')+'</p>';
+    h+=chartSvg(n);
+    h+='<table class="wmt"><thead><tr><th>Month</th><th>High</th><th>Avg</th><th>Rain/day</th><th>Humidity</th><th>Score</th></tr></thead><tbody>';
+    for(var m=0;m<12;m++){
+      var sc=p.sc[m];
+      h+='<tr'+(m===cur?' class="cur"':'')+'><td>'+MN[m]+'</td><td>'+(c.hi[m]==null?'-':tf(c.hi[m]))+'</td><td>'+(c.mean[m]==null?'-':tf(c.mean[m]))+'</td><td>'+(c.rain[m]==null?'-':c.rain[m].toFixed(1)+' mm')+'</td><td>'+(c.rh[m]==null?'-':Math.round(c.rh[m])+'%')+'</td><td>'+(sc==null?'-':'<span class="wc" style="background:'+scColor(sc)+';color:'+scText(sc)+'">'+sc+'</span>'+(p.peak[m]?' Peak':(p.sh[m]?' Off-peak':'')))+'</td></tr>';
+    }
+    h+='</tbody></table>';
+  }
+  h+=fcHtml(n)+'<div class="note" style="margin-top:8px">Climate: NASA POWER 1991-2020 averages (coarse grid). Forecast: Open-Meteo. Score is an estimate from daytime highs, rain and humidity'+(SKI[n]&&skiMode==='snow'?', scored for skiing':'')+'. Off-peak is judged from weather only, not prices.</div>';
+  $('wmbody').innerHTML=h;
+  var r=$('wmretry');if(r)r.onclick=function(){openWxModal(wmIdx)};
+}
+function openWxModal(i){
+  wmIdx=i;wmErr=false;
+  $('wmt').textContent='Four Seasons '+D[i].n;
+  $('wxmodal').hidden=false;renderWxModal();
+  var d=D[i];
+  loadFc([d]).then(function(){if(wmIdx===i)renderWxModal()});
+  ensureClim(d).then(function(){if(wmIdx===i){wmErr=false;renderWxModal()}}).catch(function(){if(wmIdx===i){wmErr=true;renderWxModal()}});
+}
+function closeWxModal(){wmIdx=null;$('wxmodal').hidden=true}
+$('wmclose').onclick=closeWxModal;
+$('wxmodal').addEventListener('click',function(e){if(e.target===this)closeWxModal()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('wxmodal').hidden)closeWxModal();else if(fullOpen)closeFull()}});
+
 function wxRefresh(light){
   M.forEach(function(m,i){m.setIcon(iconFor(D[i]))});
   if(!light&&!popOpen)draw(false);else renderList();
-  if(view==='wx')renderHeat();
+  renderHeat();
 }
 function wxUi(){
   document.body.classList.toggle('wx',wxOn);
