@@ -71,7 +71,8 @@ input{margin-bottom:6px}
 .ib.on.vis{color:#fff;background:#2e9e5b;border-color:#2e9e5b}
 .ib.on.trip{color:#fff;background:var(--b);border-color:var(--b)}
 .note{font-size:12.5px;color:var(--muted)}
-#map{flex:1;background:var(--ocean)}
+#mapwrap{position:relative;flex:1;min-width:0}
+#map{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--ocean)}
 .pinwrap{background:none;border:0}
 .pin{position:relative;width:22px;height:22px;border-radius:50%;background:var(--c);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--c),0 3px 8px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s}
 .pin::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff}
@@ -120,7 +121,9 @@ input{margin-bottom:6px}
 @media(max-width:700px){
  body{overflow:hidden}
  #app{display:block}
- #map{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;width:100%}
+ #mapwrap{position:fixed;top:0;left:0;right:0;bottom:0}
+ #wbar{top:30px;left:8px;right:8px}
+ .pin b{font-size:9px}
  #side{position:fixed;left:0;right:0;bottom:0;width:100%;max-width:none;height:150px;border-right:0;border-radius:16px 16px 0 0;box-shadow:0 -4px 18px rgba(0,0,0,.35);z-index:1200;overflow:hidden;transition:height .22s ease}
  #side.drag{transition:none}
  #grab{display:block;padding:10px 0 6px;touch-action:none;cursor:grab}
@@ -141,11 +144,46 @@ input{margin-bottom:6px}
  .pin{width:18px;height:18px}
  .mc{width:34px;height:34px;margin:3px;font-size:14px}
 }
+
+#wbar{position:absolute;z-index:1000;top:10px;left:56px;right:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;align-items:flex-start}
+#wbar>*{pointer-events:auto}
+.wb{font:inherit;font-weight:600;font-size:13px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:6px 14px;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.3);white-space:nowrap}
+.wb.on{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+#wxpanel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:0 2px 10px rgba(0,0,0,.3);max-width:100%;display:flex;flex-direction:column;gap:6px}
+#chips{display:flex;gap:4px;overflow-x:auto;max-width:100%;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.chip{font:inherit;font-size:12px;font-weight:600;padding:5px 9px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;flex:none;white-space:nowrap}
+.chip.on{background:var(--b);color:#fff;border-color:var(--b)}
+.wrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+#wxnote{font-size:11px;color:var(--muted);line-height:1.5}
+.scalebar{display:inline-block;width:64px;height:8px;border-radius:4px;background:linear-gradient(90deg,#c0392b,#e8b923,#1e8449);vertical-align:middle;margin:0 5px}
+body.wx .legend{display:none}
+.pin.w::after{display:none}
+.pin b{position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font:800 11px var(--f-disp);letter-spacing:0}
+.pin.t-retreat b{transform:rotate(-45deg)}
+.wc{display:inline-block;min-width:24px;padding:1px 6px;border-radius:9px;font:800 12px var(--f-disp);text-align:center;margin-right:6px}
+.wxb{margin-top:8px;border-top:1px solid var(--line);padding-top:6px;font-size:12px;min-width:210px}
+.wxb svg{display:block;margin:4px 0;color:var(--fg)}
+.fc{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10.5px;margin-top:4px;color:var(--muted)}
+.fc b{display:block;font-size:11px;color:var(--fg)}
+#wxsum{overflow:auto;flex:1;min-height:0;padding:0 0 14px}
+.hmc{padding:8px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.hmc select{width:auto;padding:5px}
+table.hm{border-collapse:separate;border-spacing:0;font-size:11px}
+.hm th,.hm td{padding:0;text-align:center}
+.hm thead th{position:sticky;top:0;background:var(--surface);z-index:3;font-weight:600;padding:6px 0;cursor:pointer;color:var(--muted);border-bottom:1px solid var(--line)}
+.hm thead th.cur{color:var(--b)}
+.hm th.nm,.hm td.nm{position:sticky;left:0;background:var(--surface);z-index:2;text-align:left;padding:0 8px;min-width:132px;max-width:132px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line)}
+.hm thead th.nm{z-index:4}
+.hm td.c{width:28px;min-width:28px;height:26px;font:800 11px var(--f-disp);position:relative;border-bottom:1px solid var(--surface)}
+.hm td.c.sel{outline:2px solid var(--fg);outline-offset:-2px}
+.hm td.c.sh::after{content:"";position:absolute;right:2px;top:2px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.hm td.bst{font-size:11px;color:var(--muted);padding:0 8px;white-space:nowrap;text-align:left;border-bottom:1px solid var(--line);min-width:96px}
+@media(max-width:700px){#wbar{top:30px;left:8px;right:8px}.pin b{font-size:9px}}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.10</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.11</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -153,9 +191,10 @@ input{margin-bottom:6px}
     <div class="grid2"><select id="sts" aria-label="Show"></select><button type="button" id="nearbtn" class="btn">Near me</button></div></div>
     <div id="stats"></div><div id="msg" hidden></div>
   </div>
-  <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
+  <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.11</h4><ul><li>Weather: a Weather button on the map opens a month bar. Pick a month (or Now) and every pin turns into a weather score from poor (red) to great (green); the list sorts by it.</li><li>Good but off-peak: shows properties where the chosen month is nearly as good as their best stretch but outside it.</li><li>New Weather tab: a heatmap of all properties by month, with best months and off-peak dots. Tap a month to color the map, tap a name to open it.</li><li>Property popups now show today's weather, a 7-day forecast and a 12-month chart of highs and rain.</li><li>Units toggle (C or F) and an option to score ski resorts by snow instead of comfort.</li><li>Data: climate averages from NASA POWER (1991 to 2020), forecast from Open-Meteo. Scores are estimates from daytime highs, rain and humidity, and the climate grid is coarse, so mountains and coastlines can be off.</li></ul>
     <h4>v1.10</h4><ul><li>TripAdvisor links on phones now try to open the TripAdvisor app first and fall back to the website if the app does not open within a couple of seconds.</li></ul>
     <h4>v1.9</h4><ul><li>Map labels are now in English everywhere (the previous map showed local languages, for example Chinese place names). Dark mode now uses a true dark map. A Labels toggle in the header (Menu on phones) turns place names off.</li></ul>
     <h4>v1.8</h4><ul><li>The list now shows only the properties in the current map view, and updates as you pan and zoom. Untick the box above the list to see everything. On phones, the part of the map hidden behind the list is not counted.</li></ul>
@@ -172,8 +211,15 @@ input{margin-bottom:6px}
     <footer class="credit" aria-label="Credit"><div class="cr-rule"></div><div class="cr-mark">JS</div><div class="cr-by">Designed and built by</div><div class="cr-name">Jameson Spence</div><div class="cr-date">October 2026</div></footer>
   </div>
   <div id="trip" hidden></div>
+  <div id="wxsum" hidden></div>
 </div>
-<div id="map"></div>
+<div id="mapwrap"><div id="map"></div>
+<div id="wbar"><button type="button" id="wxtoggle" class="wb" aria-expanded="false">Weather</button>
+<div id="wxpanel" hidden>
+ <div id="chips" aria-label="Month"></div>
+ <div class="wrow"><button type="button" class="chip on" data-wm="comfort">Best weather</button><button type="button" class="chip" data-wm="off">Good but off-peak</button><button type="button" class="chip" id="unitbtn">Units: C</button><button type="button" class="chip" id="skibtn">Ski resorts: Comfort</button></div>
+ <div id="wxnote"></div>
+</div></div></div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -189,6 +235,154 @@ var NI={};D.forEach(function(d,i){NI[d.n]=i});
 var userPos=null,uMarker=null,view='list';
 function isMob(){try{return window.matchMedia('(max-width:700px)').matches}catch(e){return false}}
 var side=$('side'),sheetState='peek',sheetH=0;
+
+/* ---- weather engine ---- */
+var MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+var MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var SKI={'Jackson Hole':1,'Vail':1,'Whistler':1,'Megeve':1};
+var wxOn=ls('fs_wx')===true,wxMonth=ls('fs_wxm'),wxMode=ls('fs_wxmode')||'comfort',units=ls('fs_units')||'C',skiMode=ls('fs_ski')||'comfort';
+if(!(wxMonth==='now'||(typeof wxMonth==='number'&&wxMonth>=0&&wxMonth<12)))wxMonth=new Date().getMonth();
+var clim=ls('fs_clim1')||{};
+var fcast={},fcFail={},scoreMemo={},peakMemo={};
+var climState={loading:false,done:0,failed:0,total:0};
+var popOpen=false,openPaint=null;
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function tScore(hi){return hi<24?clamp(100-(24-hi)*7,0,100):(hi>30?clamp(100-(hi-30)*9,0,100):100)}
+function rScore(r){return clamp(100-r*18,0,100)}
+function hScore(h){return h<=70?100:clamp(100-(h-70)*3.3,0,100)}
+function comfort(hi,rain,rh){return Math.round(.55*tScore(hi)+.30*rScore(rain)+.15*hScore(rh==null?60:rh))}
+function skiScore(hi,rain){var t=(hi>=-8&&hi<=2)?100:clamp(100-(hi<-8?(-8-hi):(hi-2))*10,0,100);return Math.round(.6*t+.4*clamp(rain/2.5*100,0,100))}
+function monthScore(n,m){
+  var c=clim[n];if(!c||c.hi[m]==null)return null;
+  var k=n+'|'+m+'|'+skiMode;if(k in scoreMemo)return scoreMemo[k];
+  var v=(SKI[n]&&skiMode==='snow')?skiScore(c.hi[m],c.rain[m]||0):comfort(c.hi[m],c.rain[m]||0,c.rh[m]);
+  scoreMemo[k]=v;return v;
+}
+function nowScore(n){var f=fcast[n];if(!f||!f.daily||f.daily.hi[0]==null)return null;return comfort(f.daily.hi[0],f.daily.rain[0]||0,f.cur.rh)}
+function curScore(n){return wxMonth==='now'?nowScore(n):monthScore(n,wxMonth)}
+function peakInfo(n){
+  var k=n+'|'+skiMode;if(peakMemo[k])return peakMemo[k];
+  var sc=[],mx=-1,m;
+  for(m=0;m<12;m++){var s=monthScore(n,m);sc.push(s);if(s!=null&&s>mx)mx=s}
+  if(mx<0)return null;
+  var peak=sc.map(function(s){return s!=null&&s>=mx-8});
+  var sh=sc.map(function(s,i){return !peak[i]&&s!=null&&s>=Math.max(60,mx-20)&&(peak[(i+11)%12]||peak[(i+1)%12])});
+  var best=sc.map(function(s,i){return [s,i]}).filter(function(x){return x[0]!=null}).sort(function(a,b2){return b2[0]-a[0]}).slice(0,3).map(function(x){return x[1]}).sort(function(a,b2){return a-b2});
+  return peakMemo[k]={sc:sc,peak:peak,sh:sh,best:best,max:mx};
+}
+function isShoulder(n,m){var p=peakInfo(n);return !!(p&&p.sh[m])}
+function mixHex(a,b2,t){var pa=[1,3,5].map(function(i){return parseInt(a.substr(i,2),16)}),pb=[1,3,5].map(function(i){return parseInt(b2.substr(i,2),16)});return '#'+pa.map(function(v,i){var x=Math.round(v+(pb[i]-v)*t).toString(16);return x.length<2?'0'+x:x}).join('')}
+function scColor(s){return s<50?mixHex('#c0392b','#e8b923',s/50):mixHex('#e8b923','#1e8449',(s-50)/50)}
+function scText(s){return (s>=30&&s<=75)?'#1a1a1a':'#fff'}
+function tf(c){return units==='F'?Math.round(c*9/5+32)+'°F':Math.round(c)+'°C'}
+function tfs(c){return units==='F'?Math.round(c*9/5+32)+'°':Math.round(c)+'°'}
+function fetchT(u,ms){
+  var ctl=(typeof AbortController!=='undefined')?new AbortController():null,t=ctl?setTimeout(function(){ctl.abort()},ms):null;
+  return fetch(u,ctl?{signal:ctl.signal}:{}).then(function(r){if(t)clearTimeout(t);if(!r.ok)throw new Error('http '+r.status);return r.json()});
+}
+function fetchClim(d){
+  var u='https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,T2M_MAX,PRECTOTCORR,RH2M&community=ag&longitude='+d.lo+'&latitude='+d.la+'&format=json';
+  return fetchT(u,30000).then(function(j){
+    var p=j&&j.properties&&j.properties.parameter;if(!p||!p.T2M_MAX)throw new Error('bad data');
+    function row(k){return MON.map(function(m){var v=p[k]&&p[k][m];return (typeof v==='number'&&v>-900)?Math.round(v*10)/10:null})}
+    return {hi:row('T2M_MAX'),mean:row('T2M'),rain:row('PRECTOTCORR'),rh:row('RH2M')};
+  });
+}
+function loadClimate(){
+  if(climState.loading)return;
+  var todo=D.filter(function(d){return !clim[d.n]});
+  if(!todo.length){wxStatus();return}
+  climState={loading:true,done:0,failed:0,total:todo.length};wxStatus();
+  var i=0,active=0,lastRender=0;
+  function next(){
+    while(active<4&&i<todo.length){
+      (function(d){
+        active++;i++;
+        fetchClim(d).then(function(o){clim[d.n]=o;climState.done++}).catch(function(){climState.failed++}).then(function(){
+          active--;scoreMemo={};peakMemo={};
+          if(climState.done+climState.failed>=climState.total){
+            climState.loading=false;ls('fs_clim1',clim);wxStatus();wxRefresh();if(openPaint)openPaint();
+          }else{
+            if(Date.now()-lastRender>1500){lastRender=Date.now();wxStatus();wxRefresh(true)}
+            next();
+          }
+        });
+      })(todo[i]);
+    }
+  }
+  next();
+}
+var WC={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Snow showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+function fcUrl(list){return 'https://api.open-meteo.com/v1/forecast?latitude='+list.map(function(d){return d.la}).join(',')+'&longitude='+list.map(function(d){return d.lo}).join(',')+'&current=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=7&timezone=auto'}
+function storeFc(list,j){
+  var arr=Array.isArray(j)?j:[j];
+  list.forEach(function(d,k){
+    var o=arr[k];if(!o||!o.current||!o.daily)return;
+    fcast[d.n]={t:Date.now(),cur:{t:o.current.temperature_2m,rh:o.current.relative_humidity_2m,code:o.current.weather_code},
+      daily:{date:o.daily.time,hi:o.daily.temperature_2m_max,lo:o.daily.temperature_2m_min,rain:o.daily.precipitation_sum,code:o.daily.weather_code}};
+    delete fcFail[d.n];
+  });
+}
+function loadFc(list){
+  var need=list.filter(function(d){var f=fcast[d.n];return !f||Date.now()-f.t>30*60000});
+  var chunks=[],i;for(i=0;i<need.length;i+=40)chunks.push(need.slice(i,i+40));
+  return Promise.all(chunks.map(function(c){
+    return fetchT(fcUrl(c),20000).then(function(j){storeFc(c,j)}).catch(function(){c.forEach(function(d){fcFail[d.n]=true})});
+  }));
+}
+function wxStatus(){
+  var el=$('wxnote');if(!el)return;
+  var h='Poor<span class="scalebar"></span>Great';
+  if(wxMonth==='now')h+=' - today, live';
+  else if(climState.loading)h+=' - loading climate data '+(climState.done+climState.failed)+'/'+climState.total;
+  else if(climState.failed)h+=' - '+climState.failed+' places failed to load <button type="button" class="linkbtn" id="wxretry">Retry</button>';
+  if(wxMode==='off'&&wxMonth!=='now')h+='<br>Showing only properties where this month is good but outside their best stretch (estimated from weather, not prices).';
+  else if(wxMode==='off')h+='<br>Pick a month to use the off-peak view.';
+  el.innerHTML=h;
+  var r=$('wxretry');if(r)r.onclick=function(){loadClimate()};
+}
+function wxLine(d){
+  var s=curScore(d.n);
+  if(s==null)return '<div class="reg">'+(wxMonth==='now'?(fcFail[d.n]?'Forecast unavailable':'Loading today...'):(climState.loading?'Loading climate...':'No climate data'))+'</div>';
+  var chip='<span class="wc" style="background:'+scColor(s)+';color:'+scText(s)+'">'+s+'</span>';
+  if(wxMonth==='now'){var f=fcast[d.n];return '<div class="reg">'+chip+'Today '+tf(f.daily.hi[0])+' / '+tf(f.daily.lo[0])+' - '+(WC[f.cur.code]||'')+'</div>'}
+  var c=clim[d.n],m=wxMonth,p=peakInfo(d.n),tag=p?(p.peak[m]?'Peak':(p.sh[m]?'Off-peak, still good':'')):'';
+  return '<div class="reg">'+chip+MN[m]+' high '+tf(c.hi[m])+', rain '+(c.rain[m]!=null?c.rain[m].toFixed(1):'?')+' mm/day'+(tag?' - '+tag:'')+(p?'<br>Best: '+p.best.map(function(x){return MN[x]}).join(', '):'')+'</div>';
+}
+function chartSvg(n){
+  var c=clim[n],bw=18,h='<svg viewBox="0 0 216 74" width="100%" role="img" aria-label="Monthly highs and rain">',m;
+  for(m=0;m<12;m++){
+    var hi=c.hi[m];if(hi==null)continue;
+    var s=monthScore(n,m),x=m*bw+1,bh=clamp((hi+15)/60*34,2,34),col=s==null?'#8a94a3':scColor(s),rn=clamp((c.rain[m]||0)*2.6,0,16);
+    h+='<g><title>'+MN[m]+': high '+tf(hi)+', rain '+(c.rain[m]!=null?c.rain[m].toFixed(1):'?')+' mm/day, score '+(s==null?'?':s)+'</title>'
+     +'<rect x="'+x+'" y="'+(38-bh)+'" width="'+(bw-3)+'" height="'+bh+'" rx="2" fill="'+col+'"'+(wxOn&&wxMonth===m?' stroke="currentColor" stroke-width="1.6"':'')+'/>'
+     +'<rect x="'+x+'" y="'+(58-rn)+'" width="'+(bw-3)+'" height="'+rn+'" fill="#4a90d9" opacity=".8"/>'
+     +'<text x="'+(x+(bw-3)/2)+'" y="70" font-size="9" text-anchor="middle" fill="currentColor" opacity=".7">'+MN[m].charAt(0)+'</text></g>';
+  }
+  return h+'</svg><div class="note" style="margin:0">Bars: daytime high, colored by weather score. Blue: rain.</div>';
+}
+function fillWx(i,box,popup){
+  var d=D[i],n=d.n;
+  function paint(){
+    if(!box.isConnected)return;
+    var f=fcast[n],h='';
+    if(f&&f.daily){
+      h+='<div><b>Now</b> '+tf(f.cur.t)+' - '+(WC[f.cur.code]||'')+'</div><div class="fc">'+f.daily.date.map(function(dt,k){
+        var wd=new Date(dt+'T12:00:00').toLocaleDateString('en',{weekday:'short'});
+        return '<div>'+wd+'<b>'+tfs(f.daily.hi[k])+'</b>'+tfs(f.daily.lo[k])+'<br>'+((f.daily.rain[k]||0)>=1?Math.round(f.daily.rain[k])+' mm':'&nbsp;')+'</div>';
+      }).join('')+'</div>';
+    }else h+='<div class="note">'+(fcFail[n]?'Forecast unavailable right now':'Loading forecast...')+'</div>';
+    if(clim[n])h+=chartSvg(n);
+    else h+='<div class="note">'+(climState.loading?'Loading climate data...':(climState.failed?'Climate data unavailable. Use Retry in the Weather bar.':'Climate data not loaded yet'))+'</div>';
+    h+='<div class="note" style="margin:2px 0 0">Climate: NASA POWER 1991-2020. Forecast: Open-Meteo.</div>';
+    box.innerHTML=h;
+    if(popup&&popup.update)popup.update();
+  }
+  openPaint=paint;paint();
+  loadFc([d]).then(paint);
+  if(!clim[n]&&!climState.loading)loadClimate();
+}
+
 
 /* map */
 var BND=[[-85,-180],[85,180]];
@@ -234,8 +428,12 @@ $('groupbtn').onclick=function(){
 syncGroupBtn();
 
 function iconFor(d){
-  var cls='pin t-'+d.ty.toLowerCase()+(fav.has(d.n)?' fav':'')+(vis.has(d.n)?' vis':'');
-  return L.divIcon({className:'pinwrap',html:'<div class="'+cls+'" style="--c:'+cols[d.r]+'"></div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14]});
+  var cls='pin t-'+d.ty.toLowerCase()+(fav.has(d.n)?' fav':'')+(vis.has(d.n)?' vis':''),c=cols[d.r],inner='';
+  if(wxOn){
+    var s=curScore(d.n);cls+=' w';
+    if(s==null){c='#8a94a3';inner='<b style="color:#fff">?</b>'}else{c=scColor(s);inner='<b style="color:'+scText(s)+'">'+s+'</b>'}
+  }
+  return L.divIcon({className:'pinwrap',html:'<div class="'+cls+'" style="--c:'+c+'">'+inner+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14]});
 }
 function hav(a,b){var r=Math.PI/180,x=(b[0]-a[0])*r,y=(b[1]-a[1])*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(y/2)*Math.sin(y/2);return 12742*Math.asin(Math.sqrt(h))}
 function km(x){return Math.round(x).toLocaleString()+' km'}
@@ -248,7 +446,7 @@ function btns(i){
 }
 function popHtml(i){
   var d=D[i];
-  return '<b>Four Seasons '+esc(d.n)+'</b><div class="tyl">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo]))+' away':'')+'</div>'+links(d)+'<div class="acts">'+btns(i)+'</div>';
+  return '<b>Four Seasons '+esc(d.n)+'</b><div class="tyl">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo]))+' away':'')+'</div>'+links(d)+'<div class="acts">'+btns(i)+'</div><div class="wxb" data-wx="'+i+'"></div>';
 }
 var M=D.map(function(d,i){
   var m=L.marker([d.la,d.lo],{icon:iconFor(d),riseOnHover:true});
@@ -300,6 +498,7 @@ function passes(d){
   if(sts.value==='Visited'&&!vis.has(d.n))return false;
   if(sts.value==='In trip'&&trip.indexOf(d.n)<0)return false;
   var t=q.value.toLowerCase();if(t&&d.n.toLowerCase().indexOf(t)<0)return false;
+  if(wxOn&&wxMode==='off'&&typeof wxMonth==='number'&&!isShoulder(d.n,wxMonth))return false;
   return true;
 }
 var viewOnly=ls('fs_view')!==false;
@@ -307,7 +506,7 @@ function visBounds(){
   var s=map.getSize(),bot=s.y-(isMob()?sheetH:0);if(bot<80)bot=s.y;
   return L.latLngBounds(map.containerPointToLatLng([0,bot]),map.containerPointToLatLng([s.x,0]));
 }
-function filtered(inView){var a=[],vb=(inView&&viewOnly)?visBounds():null;D.forEach(function(d,i){if(passes(d)&&(!vb||vb.contains([d.la,d.lo])))a.push(i)});if(userPos)a.sort(function(x,y){return hav(userPos,[D[x].la,D[x].lo])-hav(userPos,[D[y].la,D[y].lo])});return a}
+function filtered(inView){var a=[],vb=(inView&&viewOnly)?visBounds():null;D.forEach(function(d,i){if(passes(d)&&(!vb||vb.contains([d.la,d.lo])))a.push(i)});if(userPos)a.sort(function(x,y){return hav(userPos,[D[x].la,D[x].lo])-hav(userPos,[D[y].la,D[y].lo])});else if(wxOn)a.sort(function(x,y){var sx=curScore(D[x].n),sy=curScore(D[y].n);return (sy==null?-1:sy)-(sx==null?-1:sx)});return a}
 
 function note(t){var m=$('msg');m.textContent=t;m.hidden=false;clearTimeout(note.t);note.t=setTimeout(function(){m.hidden=true},7000)}
 function stats(n){
@@ -321,9 +520,9 @@ function renderList(){
   var idx=filtered(true),h='';
   idx.forEach(function(i){
     var d=D[i];
-    h+='<div class="it" data-i="'+i+'"><div class="row"><div><b><span class="dot" style="background:'+cols[d.r]+'"></span>'+esc(d.n)+'</b><div class="reg">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo])):'')+'</div></div><div class="ibs">'+btns(i)+'</div></div>'+links(d)+'</div>';
+    h+='<div class="it" data-i="'+i+'"><div class="row"><div><b><span class="dot" style="background:'+cols[d.r]+'"></span>'+esc(d.n)+'</b><div class="reg">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo])):'')+'</div>'+(wxOn?wxLine(d):'')+'</div><div class="ibs">'+btns(i)+'</div></div>'+links(d)+'</div>';
   });
-  $('items').innerHTML=h||'<p class="note" style="padding:12px">'+(viewOnly?'No properties in this map view. Zoom out or turn off "Only list what is in the map view".':'No properties match.')+'</p>';
+  $('items').innerHTML=h||'<p class="note" style="padding:12px">'+((wxOn&&wxMode==='off'&&climState.loading)?'Loading climate data...':(viewOnly?'No properties in this map view. Zoom out or turn off "Only list what is in the map view".':'No properties match.'))+'</p>';
   stats(idx.length);
   return idx;
 }
@@ -440,8 +639,9 @@ $('nearbtn').onclick=function(){
 function showView(v){
   view=v;
   if(v!=='list')ensureHalf();
-  $('list').hidden=v!=='list';$('trip').hidden=v!=='trip';$('notes').hidden=v!=='notes';
-  $('tabl').classList.toggle('on',v==='list');$('tabt').classList.toggle('on',v==='trip');
+  $('list').hidden=v!=='list';$('trip').hidden=v!=='trip';$('notes').hidden=v!=='notes';$('wxsum').hidden=v!=='wx';
+  $('tabl').classList.toggle('on',v==='list');$('tabt').classList.toggle('on',v==='trip');$('tabw').classList.toggle('on',v==='wx');
+  if(v==='wx')renderHeat();
   $('relbtn').textContent=v==='notes'?'Back':'Release notes';$('relbtn').setAttribute('aria-expanded',v==='notes'?'true':'false');
 }
 $('tabl').onclick=function(){showView('list')};
@@ -483,7 +683,86 @@ function listSoon(){clearTimeout(vt);vt=setTimeout(function(){if(viewOnly)render
 map.on('moveend',listSoon);
 $('viewonly').checked=viewOnly;
 $('viewonly').onchange=function(){viewOnly=this.checked;ls('fs_view',viewOnly);renderList();$('list').scrollTop=0};
+/* ---- weather UI ---- */
+var heatSort=ls('fs_hsort')||'name';
+function renderHeat(){
+  var box=$('wxsum');if(!box||view!=='wx')return;
+  var rows=filtered(false),i;
+  if(heatSort==='month'&&typeof wxMonth==='number')rows.sort(function(x,y){var a=monthScore(D[x].n,wxMonth),b2=monthScore(D[y].n,wxMonth);return (b2==null?-1:b2)-(a==null?-1:a)});
+  else if(heatSort==='best')rows.sort(function(x,y){var a=peakInfo(D[x].n),b2=peakInfo(D[y].n);return (b2?b2.max:-1)-(a?a.max:-1)});
+  else rows.sort(function(x,y){return x-y});
+  var h='<div class="hmc">Sort <select id="hsort"><option value="name"'+(heatSort==='name'?' selected':'')+'>Region order</option><option value="month"'+(heatSort==='month'?' selected':'')+'>Selected month</option><option value="best"'+(heatSort==='best'?' selected':'')+'>Best score</option></select><span>Tap a month to color the map. A white dot marks good but off-peak.</span></div>';
+  if(climState.loading)h+='<div class="hmc">Loading climate data '+(climState.done+climState.failed)+'/'+climState.total+'...</div>';
+  else if(climState.failed)h+='<div class="hmc">'+climState.failed+' places failed to load. <button type="button" class="linkbtn" id="hretry">Retry</button></div>';
+  h+='<table class="hm"><thead><tr><th class="nm">Property</th><th>Best</th>';
+  MN.forEach(function(m,k){h+='<th data-m="'+k+'"'+(wxOn&&wxMonth===k?' class="cur"':'')+'>'+m+'</th>'});
+  h+='</tr></thead><tbody>';
+  rows.forEach(function(ix){
+    var n=D[ix].n,p=peakInfo(n);
+    h+='<tr data-i="'+ix+'"><td class="nm" title="'+esc(n)+'">'+esc(n)+'</td><td class="bst">'+(p?p.best.map(function(x){return MN[x]}).join(', '):'-')+'</td>';
+    for(var m=0;m<12;m++){
+      var s=p?p.sc[m]:null;
+      h+='<td class="c'+(s!=null&&p.sh[m]?' sh':'')+(wxOn&&wxMonth===m?' sel':'')+'" data-m="'+m+'"'+(s==null?'':' style="background:'+scColor(s)+';color:'+scText(s)+'"')+'>'+(s==null?'':s)+'</td>';
+    }
+    h+='</tr>';
+  });
+  box.innerHTML=h+'</tbody></table><div class="note" style="padding:8px 12px">Scores are estimates from daytime highs, rain and humidity (NASA POWER 1991-2020 averages, coarse grid).</div>';
+  $('hsort').onchange=function(){heatSort=this.value;ls('fs_hsort',heatSort);renderHeat()};
+  var r=$('hretry');if(r)r.onclick=function(){loadClimate()};
+}
+$('wxsum').addEventListener('click',function(e){
+  var th=e.target.closest('th[data-m]'),td=e.target.closest('td.c'),nm=e.target.closest('td.nm');
+  var m=th?th.getAttribute('data-m'):(td?td.getAttribute('data-m'):null);
+  if(m!==null){wxMonth=+m;ls('fs_wxm',wxMonth);if(!wxOn){wxOn=true;ls('fs_wx',true)}wxUi();wxRefresh();return}
+  if(nm){var tr=nm.closest('tr');if(tr)openProp(+tr.getAttribute('data-i'))}
+});
+function wxRefresh(light){
+  M.forEach(function(m,i){m.setIcon(iconFor(D[i]))});
+  if(!light&&!popOpen)draw(false);else renderList();
+  if(view==='wx')renderHeat();
+}
+function wxUi(){
+  document.body.classList.toggle('wx',wxOn);
+  $('wxtoggle').classList.toggle('on',wxOn);$('wxtoggle').setAttribute('aria-expanded',wxOn?'true':'false');
+  $('wxpanel').hidden=!wxOn;
+  Array.prototype.forEach.call($('chips').children,function(b){b.classList.toggle('on',String(b.getAttribute('data-m'))===String(wxMonth))});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-wm]'),function(b){b.classList.toggle('on',b.getAttribute('data-wm')===wxMode)});
+  $('unitbtn').textContent='Units: '+units;
+  $('skibtn').textContent='Ski resorts: '+(skiMode==='snow'?'Snow':'Comfort');
+  wxStatus();
+}
+function wxLoadFor(){
+  if(wxMonth==='now'){loadFc(D).then(function(){wxRefresh()})}
+  else loadClimate();
+}
+function wxInit(){
+  var h='<button type="button" class="chip" data-m="now">Now</button>';
+  MN.forEach(function(m,i){h+='<button type="button" class="chip" data-m="'+i+'">'+m+'</button>'});
+  $('chips').innerHTML=h;
+  $('chips').onclick=function(e){
+    var b=e.target.closest('button');if(!b)return;
+    var v=b.getAttribute('data-m');wxMonth=v==='now'?'now':+v;ls('fs_wxm',wxMonth);
+    wxUi();wxLoadFor();wxRefresh();
+  };
+  $('wxtoggle').onclick=function(){wxOn=!wxOn;ls('fs_wx',wxOn);wxUi();if(wxOn)wxLoadFor();wxRefresh()};
+  Array.prototype.forEach.call(document.querySelectorAll('[data-wm]'),function(b){
+    b.onclick=function(){wxMode=b.getAttribute('data-wm');ls('fs_wxmode',wxMode);wxUi();wxRefresh()};
+  });
+  $('unitbtn').onclick=function(){units=units==='C'?'F':'C';ls('fs_units',units);wxUi();wxRefresh(true)};
+  $('skibtn').onclick=function(){skiMode=skiMode==='snow'?'comfort':'snow';ls('fs_ski',skiMode);scoreMemo={};peakMemo={};wxUi();wxRefresh()};
+  $('tabw').onclick=function(){showView('wx');loadClimate()};
+  map.on('popupopen',function(e){
+    popOpen=true;
+    var el=e.popup.getElement(),b=el&&el.querySelector('.wxb');
+    if(b)fillWx(+b.getAttribute('data-wx'),b,e.popup);
+  });
+  map.on('popupclose',function(){popOpen=false;openPaint=null});
+  wxUi();
+  if(wxOn)wxLoadFor();
+}
+
 readHash();
 draw(true);
 tripChanged(false);
+wxInit();
 </script></body></html>
