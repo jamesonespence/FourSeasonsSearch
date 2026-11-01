@@ -28,6 +28,7 @@
 <style>
 :root{--bg:#f1f4f8;--surface:#fff;--fg:#0e1a2c;--muted:#58687e;--line:#d8dfe9;--a:#1b4f9c;--b:#c8102e;--track:#e6ebf2;--ocean:#cfe0ea;--gold:#b8892b;--f-disp:'Big Shoulders Display','Arial Narrow',Impact,sans-serif}
 [data-theme="dark"]{--bg:#0a111e;--surface:#121b2d;--fg:#e8eef8;--muted:#92a3bb;--line:#233049;--a:#5b9bff;--b:#ff5a6e;--track:#1e2a42;--ocean:#0b1626;--gold:#e0b04a;color-scheme:dark}
+[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;height:100%;font-family:'Barlow','Helvetica Neue',Arial,sans-serif;color:var(--fg);background:var(--bg)}
@@ -113,7 +114,7 @@ input{margin-bottom:6px}
 </style></head><body>
 <div id="app">
 <div id="side">
-  <div class="verbar"><span>Four Seasons Map v1.4</span><span class="vbtns"><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.5</span><span class="vbtns"><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="grid2"><select id="reg" aria-label="Region"></select><select id="typ" aria-label="Type"></select></div>
@@ -124,6 +125,7 @@ input{margin-bottom:6px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.5</h4><ul><li>Fixed the map background: switched to OpenStreetMap tiles (the previous provider started requiring an API key). Dark mode now darkens the same map.</li></ul>
     <h4>v1.4</h4><ul><li>Nearby pins now merge into numbered clusters that split as you zoom.</li><li>Near me button: finds the closest properties and shows distances.</li><li>Favorites and Visited: tap the star or check on any property. Saved on your device, with a Show filter.</li><li>Dark mode (Auto, Light or Dark) and a cleaner basemap.</li><li>Type filter and pin shapes: City hotels (circle), Resorts (rounded square) and Retreats (diamond).</li><li>Stats strip showing counts by type, favorites and visited.</li><li>Share button: copies a link that remembers your filters (works on the live site).</li><li>Trip planner: add properties, reorder them, and see the route and distances on the map.</li></ul>
     <h4>v1.3</h4><ul><li>New map pins: larger ringed markers with a center dot and shadow that grow on hover, a region color legend with counts, and cleaner labels and popups.</li></ul>
     <h4>v1.2</h4><ul><li>Version number and release notes added at the top. Credit footer added at the bottom of the list.</li></ul>
@@ -155,8 +157,8 @@ var BND=[[-85,-180],[85,180]];
 var map=L.map('map',{minZoom:2,maxBounds:BND,maxBoundsViscosity:1.0}).setView([25,10],2);
 var tl=null;
 function setTiles(t){
-  if(tl)map.removeLayer(tl);
-  tl=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(t==='dark'?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{noWrap:true,bounds:BND,maxZoom:19,subdomains:'abcd',attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);
+  if(tl)return;
+  tl=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{noWrap:true,bounds:BND,maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
 }
 var themePref=ls('fs_theme')||'auto';
 function effTheme(){if(themePref!=='auto')return themePref;try{return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){return 'light'}}
