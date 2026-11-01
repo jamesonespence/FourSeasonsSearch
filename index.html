@@ -28,6 +28,8 @@
 <style>
 :root{--bg:#f1f4f8;--surface:#fff;--fg:#0e1a2c;--muted:#58687e;--line:#d8dfe9;--a:#1b4f9c;--b:#c8102e;--track:#e6ebf2;--ocean:#cfe0ea;--gold:#b8892b;--f-disp:'Big Shoulders Display','Arial Narrow',Impact,sans-serif}
 [data-theme="dark"]{--bg:#0a111e;--surface:#121b2d;--fg:#e8eef8;--muted:#92a3bb;--line:#233049;--a:#5b9bff;--b:#ff5a6e;--track:#1e2a42;--ocean:#0b1626;--gold:#e0b04a;color-scheme:dark}
+.vo{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;color:var(--muted);position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);z-index:2;cursor:pointer}
+.vo input{width:auto;margin:0;padding:0}
 [data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -144,7 +146,7 @@ input{margin-bottom:6px}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.7</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.8</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -155,6 +157,7 @@ input{margin-bottom:6px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.8</h4><ul><li>The list now shows only the properties in the current map view, and updates as you pan and zoom. Untick the box above the list to see everything. On phones, the part of the map hidden behind the list is not counted.</li></ul>
     <h4>v1.7</h4><ul><li>Pins no longer group by default: they just overlap, and the one you hover or tap comes to the front. A Grouping toggle in the header (Menu on phones) brings the numbered clusters back.</li></ul>
     <h4>v1.6</h4><ul><li>Mobile layout: full-screen map with a pull-up list (drag the handle or tap it to cycle peek, half and full).</li><li>Filters tucked behind a Filters button, header links behind Menu, compact one-line stats, compact list rows, smaller pins and clusters.</li><li>The legend is now a collapsible Key button. Tapping a property in the list drops the sheet so you can see the pin and popup.</li></ul>
     <h4>v1.5</h4><ul><li>Fixed the map background: switched to OpenStreetMap tiles (the previous provider started requiring an API key). Dark mode now darkens the same map.</li></ul>
@@ -164,7 +167,7 @@ input{margin-bottom:6px}
     <h4>v1.1</h4><ul><li>Map now shows a single world: no sideways repeating, and panning is limited to the edges.</li></ul>
     <h4>v1.0</h4><ul><li>First release: 140 open Four Seasons hotels and resorts on one map, with a searchable list and region filter. Each property links to its official Four Seasons page, TripAdvisor and Google Maps.</li></ul>
   </div>
-  <div id="list"><div id="items"></div>
+  <div id="list"><label class="vo"><input type="checkbox" id="viewonly"> Only list what is in the map view</label><div id="items"></div>
     <footer class="credit" aria-label="Credit"><div class="cr-rule"></div><div class="cr-mark">JS</div><div class="cr-by">Designed and built by</div><div class="cr-name">Jameson Spence</div><div class="cr-date">October 2026</div></footer>
   </div>
   <div id="trip" hidden></div>
@@ -247,6 +250,7 @@ function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.52
 function setSheet(s){
   if(!isMob()){side.style.height='';sheetH=0;sheetState=s;return}
   sheetState=s;sheetH=stops()[s];side.style.height=sheetH+'px';
+  if(viewOnly)setTimeout(function(){renderList()},260);
 }
 function ensureHalf(){if(isMob()&&sheetState==='peek')setSheet('half')}
 function fit(pts,maxZ){
@@ -287,27 +291,34 @@ function passes(d){
   var t=q.value.toLowerCase();if(t&&d.n.toLowerCase().indexOf(t)<0)return false;
   return true;
 }
-function filtered(){var a=[];D.forEach(function(d,i){if(passes(d))a.push(i)});if(userPos)a.sort(function(x,y){return hav(userPos,[D[x].la,D[x].lo])-hav(userPos,[D[y].la,D[y].lo])});return a}
+var viewOnly=ls('fs_view')!==false;
+function visBounds(){
+  var s=map.getSize(),bot=s.y-(isMob()?sheetH:0);if(bot<80)bot=s.y;
+  return L.latLngBounds(map.containerPointToLatLng([0,bot]),map.containerPointToLatLng([s.x,0]));
+}
+function filtered(inView){var a=[],vb=(inView&&viewOnly)?visBounds():null;D.forEach(function(d,i){if(passes(d)&&(!vb||vb.contains([d.la,d.lo])))a.push(i)});if(userPos)a.sort(function(x,y){return hav(userPos,[D[x].la,D[x].lo])-hav(userPos,[D[y].la,D[y].lo])});return a}
 
 function note(t){var m=$('msg');m.textContent=t;m.hidden=false;clearTimeout(note.t);note.t=setTimeout(function(){m.hidden=true},7000)}
 function stats(n){
   var c={City:0,Resort:0,Retreat:0};D.forEach(function(d){c[d.ty]++});
-  $('stats').innerHTML='<span class="sf">Showing <b>'+n+'</b> of '+D.length+'</span><span class="sf">City <b>'+c.City+'</b></span><span class="sf">Resort <b>'+c.Resort+'</b></span><span class="sf">Retreat <b>'+c.Retreat+'</b></span><span class="sf">Favorites <b>'+fav.size+'</b></span><span class="sf">Visited <b>'+vis.size+'</b></span><span class="sm"><b>'+n+'</b> shown - <b>'+fav.size+'</b> favorites - <b>'+vis.size+'</b> visited</span>';
+  var wd=viewOnly?'In view':'Showing';
+  $('stats').innerHTML='<span class="sf">'+wd+' <b>'+n+'</b> of '+D.length+'</span><span class="sf">City <b>'+c.City+'</b></span><span class="sf">Resort <b>'+c.Resort+'</b></span><span class="sf">Retreat <b>'+c.Retreat+'</b></span><span class="sf">Favorites <b>'+fav.size+'</b></span><span class="sf">Visited <b>'+vis.size+'</b></span><span class="sm"><b>'+n+'</b> '+(viewOnly?'in view':'shown')+' - <b>'+fav.size+'</b> favorites - <b>'+vis.size+'</b> visited</span>';
   var nf=(reg.value!=='All regions'?1:0)+(typ.value!=='All types'?1:0)+(sts.value!=='Show all'?1:0);
   $('filterbtn').textContent=nf?'Filters ('+nf+')':'Filters';
 }
 function renderList(){
-  var idx=filtered(),h='';
+  var idx=filtered(true),h='';
   idx.forEach(function(i){
     var d=D[i];
     h+='<div class="it" data-i="'+i+'"><div class="row"><div><b><span class="dot" style="background:'+cols[d.r]+'"></span>'+esc(d.n)+'</b><div class="reg">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo])):'')+'</div></div><div class="ibs">'+btns(i)+'</div></div>'+links(d)+'</div>';
   });
-  $('items').innerHTML=h||'<p class="note" style="padding:12px">No properties match.</p>';
+  $('items').innerHTML=h||'<p class="note" style="padding:12px">'+(viewOnly?'No properties in this map view. Zoom out or turn off "Only list what is in the map view".':'No properties match.')+'</p>';
   stats(idx.length);
   return idx;
 }
 function draw(fit){
-  var idx=renderList(),arr=idx.map(function(i){return M[i]});
+  var idx=filtered(false),arr=idx.map(function(i){return M[i]});
+  renderList();
   cl.clearLayers();
   if(cl.addLayers)cl.addLayers(arr);else arr.forEach(function(m){cl.addLayer(m)});
   if(fit!==false&&idx.length)window.fit(idx.map(function(i){return [D[i].la,D[i].lo]}),6);
@@ -391,9 +402,9 @@ $('nearbtn').onclick=function(){
     userPos=[p.coords.latitude,p.coords.longitude];
     uMarker=L.circleMarker(userPos,{radius:8,color:'#fff',weight:3,fillColor:'#1a73e8',fillOpacity:1}).addTo(map);
     $('nearbtn').textContent='Clear location';
-    var idx=renderList();$('list').scrollTop=0;
+    var idx=filtered(false);
     var near=idx.slice(0,3).map(function(i){return [D[i].la,D[i].lo]}).concat([userPos]);
-    ensureHalf();window.fit(near,8);
+    ensureHalf();window.fit(near,8);renderList();$('list').scrollTop=0;
   },fail,{timeout:10000})}catch(e){fail()}
 };
 
@@ -439,6 +450,11 @@ lg.onAdd=function(){var c=L.DomUtil.create('div','legend'+(isMob()?' closed':'')
 lg.addTo(map);
 
 setSheet('peek');
+var vt=null;
+function listSoon(){clearTimeout(vt);vt=setTimeout(function(){if(viewOnly)renderList()},120)}
+map.on('moveend',listSoon);
+$('viewonly').checked=viewOnly;
+$('viewonly').onchange=function(){viewOnly=this.checked;ls('fs_view',viewOnly);renderList();$('list').scrollTop=0};
 readHash();
 draw(true);
 tripChanged(false);
