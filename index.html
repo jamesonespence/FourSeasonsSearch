@@ -228,11 +228,26 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .hm td.c.ov::before{content:attr(data-s);position:absolute;left:2px;top:1px;font:700 7px sans-serif;opacity:.9}
 .hm.big td.c.ov::before{font-size:9px}
 .hmc select.hlens,.hmc select.hsort{width:auto;padding:5px}
+
+#wxkey{position:fixed;top:0;left:0;right:0;bottom:0;z-index:3100;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+#keybody{padding:6px 14px 16px;font-size:13px;line-height:1.45}
+#keybody h4{font-family:var(--f-disp);font-size:16px;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 4px}
+.kst{display:flex;gap:2px}
+.kst span{flex:1;text-align:center;font:800 11px var(--f-disp);padding:3px 0;border-radius:3px}
+.kgrad{height:10px;border-radius:5px;margin:4px 0}
+.kgrad.t{background:linear-gradient(90deg,#27408b,#3c7dc4,#59b0c9,#5cb85c,#f0c93b,#e8872b,#c0392b)}
+.kgrad.s{background:linear-gradient(90deg,#c0392b,#e8b923,#1e8449)}
+.krow{display:flex;align-items:center;gap:8px;padding:2px 0}
+.ksamp{display:inline-block;width:46px;flex:none;text-align:center;padding:6px 0 10px}
+.ksamp .pin{display:inline-block;vertical-align:middle}
+.krow .kt{flex:1}
+.krow .kt small{display:block;color:var(--muted);font-size:11.5px}
+.kcell{display:inline-block;width:28px;height:20px;border-radius:3px;font:800 11px/20px var(--f-disp);text-align:center;flex:none}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.13</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.14</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -243,6 +258,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.14</h4><ul><li>New Key button in the weather bar: explains the temperature colors, season rings, rain drops, the overall score, pin shapes and heatmap lenses, with real samples.</li></ul>
     <h4>v1.13</h4><ul><li>Pins now show three things at once: fill color and number = temperature (daytime high, or daily average with the Temp toggle), ring = tourist season (solid peak, dashed shoulder, none low), blue drop = rain (bigger is wetter). The old single score is still there under Overall score.</li><li>Goal presets: Beach, Sightseeing, Quiet and pleasant, Ski, or a Custom range. They filter the map, list and heatmap for the month you pick.</li><li>Good but off-peak now means good weather (score 65+) in shoulder or low tourist season.</li><li>Heatmap lenses: Overview, Score, Temperature, Rain, Season.</li><li>Plain-language verdict per month in popups and the weather dialog, for example "mild, mostly dry, shoulder season. Good for sightseeing; not beach weather."</li><li>Tourist seasons are my own approximations by destination type, not official data, and sea temperature is not included yet.</li></ul>
     <h4>v1.12</h4><ul><li>Weather tab: the heatmap now lists only the properties in the current map view (same checkbox as the list), and updates as you pan and zoom.</li><li>Full screen: a Full screen button on the Weather tab opens the heatmap over the whole page, with bigger cells.</li><li>Weather button (sun icon) on every property in the list and in popups: opens a quick 12-month view with a chart, a month-by-month table of highs, rain, humidity and score, best months, off-peak months and the 7-day forecast.</li></ul>
     <h4>v1.11</h4><ul><li>Weather: a Weather button on the map opens a month bar. Pick a month (or Now) and every pin turns into a weather score from poor (red) to great (green); the list sorts by it.</li><li>Good but off-peak: shows properties where the chosen month is nearly as good as their best stretch but outside it.</li><li>New Weather tab: a heatmap of all properties by month, with best months and off-peak dots. Tap a month to color the map, tap a name to open it.</li><li>Property popups now show today's weather, a 7-day forecast and a 12-month chart of highs and rain.</li><li>Units toggle (C or F) and an option to score ski resorts by snow instead of comfort.</li><li>Data: climate averages from NASA POWER (1991 to 2020), forecast from Open-Meteo. Scores are estimates from daytime highs, rain and humidity, and the climate grid is coarse, so mountains and coastlines can be off.</li></ul>
@@ -269,7 +285,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 <div id="wxpanel" hidden>
  <div id="chips" aria-label="Month"></div>
  <div class="wrow"><button type="button" class="chip on" data-wm="comfort">Best weather</button><button type="button" class="chip" data-wm="off">Good but off-peak</button><button type="button" class="chip" id="unitbtn">Units: C</button><button type="button" class="chip" id="skibtn">Ski resorts: Comfort</button></div>
- <div class="wrow"><span class="rl">Pins</span><button type="button" class="chip on" data-wv="details">Temp, rain, season</button><button type="button" class="chip" data-wv="score">Overall score</button><button type="button" class="chip" id="tbbtn">Temp: High</button></div>
+ <div class="wrow"><span class="rl">Pins</span><button type="button" class="chip on" data-wv="details">Temp, rain, season</button><button type="button" class="chip" data-wv="score">Overall score</button><button type="button" class="chip" id="tbbtn">Temp: High</button><button type="button" class="chip" id="keybtn">Key: how to read this</button></div>
  <div class="wrow"><span class="rl">Goal</span><button type="button" class="chip on" data-goal="any">Any</button><button type="button" class="chip" data-goal="beach">Beach</button><button type="button" class="chip" data-goal="sights">Sightseeing</button><button type="button" class="chip" data-goal="quiet">Quiet and pleasant</button><button type="button" class="chip" data-goal="ski">Ski</button><button type="button" class="chip" data-goal="custom">Custom</button></div>
  <div id="wxcustom" class="wrow wrap" hidden>High <select id="gmin" aria-label="Minimum high"></select> to <select id="gmax" aria-label="Maximum high"></select> C, rain <select id="grain" aria-label="Rain"><option value="0">Dry only</option><option value="1">Up to some showers</option><option value="2">Up to wet</option><option value="3">Any</option></select><label><input type="checkbox" data-gs="P" checked> Peak</label><label><input type="checkbox" data-gs="S" checked> Shoulder</label><label><input type="checkbox" data-gs="L" checked> Low</label></div>
  <div id="wxnote"></div>
@@ -277,6 +293,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 </div>
 <div id="wxfull" hidden><div class="fhead"><b>Weather by month</b><button type="button" class="btn" id="fclose">Close</button></div><div id="fbody"></div></div>
 <div id="wxmodal" hidden role="dialog" aria-modal="true" aria-labelledby="wmt"><div class="wmbox"><div class="wmhead"><b id="wmt"></b><button type="button" class="btn" id="wmclose">Close</button></div><div id="wmbody"></div></div></div>
+<div id="wxkey" hidden role="dialog" aria-modal="true" aria-labelledby="keyt"><div class="wmbox"><div class="wmhead"><b id="keyt">How to read the weather view</b><button type="button" class="btn" id="keyclose">Close</button></div><div id="keybody"></div></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
@@ -877,6 +894,47 @@ function heatClick(e){
 $('wxsum').addEventListener('click',heatClick);
 $('fbody').addEventListener('click',heatClick);
 
+
+/* ---- key / legend dialog ---- */
+function samp(cls,color,txt){return '<span class="ksamp"><div class="pin w '+cls+'" style="--c:'+color+'"><b style="color:'+lumText(color)+'">'+txt+'</b></div></span>'}
+function keyHtml(){
+  var stops=[-10,5,15,22,27,32,38],h='';
+  h+='<h4>Temperature (pin color and number)</h4><div class="kgrad t"></div><div class="kst">'+stops.map(function(t){var c=tcColor(t);return '<span style="background:'+c+';color:'+lumText(c)+'">'+tnum(t)+'°</span>'}).join('')+'</div>';
+  h+='<p class="note" style="margin:4px 0 0">The number is the '+(tbasis==='avg'?'daily average':'daytime high')+' for the month you picked, in '+units+'. Change it with "Temp" in the weather bar. Goals and the overall score always use the daytime high.</p>';
+  h+='<h4>Tourist season (ring around the pin)</h4>';
+  h+='<div class="krow">'+samp('sP','#5cb85c','24')+'<div class="kt"><b>Solid ring: peak season</b><small>Busiest and priciest</small></div></div>';
+  h+='<div class="krow">'+samp('sS','#5cb85c','24')+'<div class="kt"><b>Dashed ring: shoulder season</b><small>Quieter, often good value</small></div></div>';
+  h+='<div class="krow">'+samp('','#5cb85c','24')+'<div class="kt"><b>No ring: low season</b><small>Quietest, sometimes with weather trade-offs</small></div></div>';
+  h+='<p class="note" style="margin:2px 0 0">Seasons are my approximations by destination type, not official data.</p>';
+  h+='<h4>Rain (blue drop)</h4>';
+  h+='<div class="krow">'+samp('','#5cb85c','24')+'<div class="kt"><b>No drop: dry</b><small>Under 0.8 mm per day (about 25 mm a month)</small></div></div>';
+  h+='<div class="krow">'+samp('r1','#5cb85c','24')+'<div class="kt"><b>Small drop: some showers</b><small>0.8 to 2.5 mm per day (about 25 to 75 mm a month)</small></div></div>';
+  h+='<div class="krow">'+samp('r2','#5cb85c','24')+'<div class="kt"><b>Medium drop: wet</b><small>2.5 to 5 mm per day (about 75 to 150 mm a month)</small></div></div>';
+  h+='<div class="krow">'+samp('r3','#5cb85c','24')+'<div class="kt"><b>Large dark drop: monsoon-like</b><small>Over 5 mm per day (150 mm a month or more)</small></div></div>';
+  h+='<p class="note" style="margin:2px 0 0">These are monthly averages. They cannot tell a few minutes of rain a day from an all-day downpour, so treat "some showers" as a guide.</p>';
+  h+='<h4>Overall score (Pins: Overall score)</h4><div class="kgrad s"></div><div class="kst"><span style="background:#c0392b;color:#fff">0</span><span style="background:#e8b923;color:#1a1a1a">50</span><span style="background:#1e8449;color:#fff">100</span></div>';
+  h+='<p class="note" style="margin:4px 0 0">55% daytime high (24 to 30 C scores best), 30% rain (less is better), 15% humidity (under 70% is best). 0 is poor, 100 is great. A white dot in the heatmap Score lens means good weather (65 or more) in shoulder or low season.</p>';
+  h+='<h4>Pin shapes and marks</h4>';
+  h+='<div class="krow">'+samp('t-city','#8a94a3','')+'<div class="kt"><b>Circle: city hotel</b></div></div>';
+  h+='<div class="krow">'+samp('t-resort','#8a94a3','')+'<div class="kt"><b>Rounded square: resort</b></div></div>';
+  h+='<div class="krow">'+samp('t-retreat','#8a94a3','')+'<div class="kt"><b>Diamond: retreat</b></div></div>';
+  h+='<div class="krow">'+samp('fav','#8a94a3','')+'<div class="kt"><b>Gold outer ring: favorite</b></div></div>';
+  h+='<div class="krow">'+samp('','#8a94a3','?')+'<div class="kt"><b>Gray with ?: no weather data loaded yet</b></div></div>';
+  h+='<h4>Heatmap (Weather tab)</h4>';
+  h+='<div class="krow"><span class="kcell" style="background:#a9c14b;color:#1a1a1a;box-shadow:inset 0 -4px 0 #3a86d6">25</span><div class="kt"><b>Overview</b><small>Color = temperature. Small corner letter = season (P, S, L). Blue bar = rain: light is some showers, medium is wet, dark is monsoon-like.</small></div></div>';
+  h+='<div class="krow"><span class="kcell" style="background:#53923f;color:#fff">87</span><div class="kt"><b>Score</b><small>Overall weather score, red to green.</small></div></div>';
+  h+='<div class="krow"><span class="kcell" style="background:#4f94d4;color:#fff">2.5</span><div class="kt"><b>Rain</b><small>mm per day. Darker blue is wetter.</small></div></div>';
+  h+='<div class="krow"><span class="kcell" style="background:#9db4e0;color:#14213d">S</span><div class="kt"><b>Season</b><small>P peak, S shoulder, L low.</small></div></div>';
+  h+='<h4>Goals and modes</h4><p class="note" style="margin:0">Goals (Beach, Sightseeing, Quiet and pleasant, Ski, Custom) hide places that do not fit for the month you pick. "Good but off-peak" keeps places with a score of 65 or more in shoulder or low season. Sea temperature is not included.</p>';
+  h+='<p class="note">Data: NASA POWER 1991-2020 climate averages (coarse grid, so mountains and coasts can be off) and Open-Meteo forecasts.</p>';
+  return h;
+}
+function openKey(){$('keybody').innerHTML=keyHtml();$('wxkey').hidden=false}
+function closeKey(){$('wxkey').hidden=true}
+$('keyclose').onclick=closeKey;
+$('wxkey').addEventListener('click',function(e){if(e.target===this)closeKey()});
+$('keybtn').onclick=openKey;
+
 /* ---- per-property 12-month weather dialog ---- */
 var wmIdx=null,wmErr=false;
 function fcHtml(n){
@@ -924,7 +982,7 @@ function openWxModal(i){
 function closeWxModal(){wmIdx=null;$('wxmodal').hidden=true}
 $('wmclose').onclick=closeWxModal;
 $('wxmodal').addEventListener('click',function(e){if(e.target===this)closeWxModal()});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('wxmodal').hidden)closeWxModal();else if(fullOpen)closeFull()}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('wxkey').hidden)closeKey();else if(!$('wxmodal').hidden)closeWxModal();else if(fullOpen)closeFull()}});
 
 function wxRefresh(light){
   M.forEach(function(m,i){m.setIcon(iconFor(D[i]))});
