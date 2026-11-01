@@ -145,7 +145,7 @@ input{margin-bottom:6px}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.9</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.10</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -156,6 +156,7 @@ input{margin-bottom:6px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.10</h4><ul><li>TripAdvisor links on phones now try to open the TripAdvisor app first and fall back to the website if the app does not open within a couple of seconds.</li></ul>
     <h4>v1.9</h4><ul><li>Map labels are now in English everywhere (the previous map showed local languages, for example Chinese place names). Dark mode now uses a true dark map. A Labels toggle in the header (Menu on phones) turns place names off.</li></ul>
     <h4>v1.8</h4><ul><li>The list now shows only the properties in the current map view, and updates as you pan and zoom. Untick the box above the list to see everything. On phones, the part of the map hidden behind the list is not counted.</li></ul>
     <h4>v1.7</h4><ul><li>Pins no longer group by default: they just overlap, and the one you hover or tap comes to the front. A Grouping toggle in the header (Menu on phones) brings the numbered clusters back.</li></ul>
@@ -238,7 +239,7 @@ function iconFor(d){
 }
 function hav(a,b){var r=Math.PI/180,x=(b[0]-a[0])*r,y=(b[1]-a[1])*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(y/2)*Math.sin(y/2);return 12742*Math.asin(Math.sqrt(h))}
 function km(x){return Math.round(x).toLocaleString()+' km'}
-function links(d){return '<div class="lk"><a href="'+d.o+'" target="_blank" rel="noopener">Official site</a><a href="'+d.t+'" target="_blank" rel="noopener">TripAdvisor</a><a href="'+d.g+'" target="_blank" rel="noopener">Google Maps</a></div>'}
+function links(d){return '<div class="lk"><a href="'+d.o+'" target="_blank" rel="noopener">Official site</a><a class="ta" data-n="'+esc(d.n)+'" href="'+d.t+'" target="_blank" rel="noopener">TripAdvisor</a><a href="'+d.g+'" target="_blank" rel="noopener">Google Maps</a></div>'}
 function btns(i){
   var d=D[i];
   return '<button type="button" class="ib fav'+(fav.has(d.n)?' on':'')+'" data-act="fav" data-i="'+i+'" title="Favorite" aria-pressed="'+fav.has(d.n)+'">&#9733;</button>'
@@ -367,6 +368,23 @@ document.addEventListener('click',function(e){
   var it=e.target.closest&&e.target.closest('.it');
   if(it&&!(e.target.closest('a'))){openProp(+it.getAttribute('data-i'))}
 });
+
+/* TripAdvisor: on phones try the app first, fall back to the website */
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a.ta');
+  if(!a)return;
+  if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))return;
+  e.preventDefault();
+  var web=a.href,left=false;
+  function gone(){left=true}
+  document.addEventListener('visibilitychange',gone,{once:true});
+  window.addEventListener('pagehide',gone,{once:true});
+  try{location.href='tripadvisor://search?q='+encodeURIComponent('Four Seasons '+a.getAttribute('data-n'))}catch(x){}
+  setTimeout(function(){
+    document.removeEventListener('visibilitychange',gone);
+    if(!left&&!document.hidden)location.href=web;
+  },1800);
+},true);
 
 /* trip */
 function arc(a,b){
