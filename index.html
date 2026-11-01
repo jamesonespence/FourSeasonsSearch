@@ -275,11 +275,24 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .arow .reg{font-size:12px;color:var(--muted);margin-top:1px}
 .arow .lk{font-size:14px;margin-top:6px}
 .arow .lk a{margin-right:18px}
+
+.hcard{padding:8px 10px 7px;border-bottom:1px solid var(--line)}
+.hnm{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;cursor:pointer}
+.hnm b{font-size:15px}
+.hnm span{font-size:11px;color:var(--muted);text-align:right}
+.hgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.hc{position:relative;height:50px;border-radius:5px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;cursor:pointer;background:var(--track);color:var(--fg)}
+.hc b{font:800 17px/1 var(--f-disp)}
+.hc .hmn{position:absolute;left:4px;top:3px;font:700 9.5px sans-serif;opacity:.85}
+.hc .hs{position:absolute;right:3px;top:3px;min-width:14px;padding:0 3px;border-radius:4px;font:800 10px/14px var(--f-disp);text-align:center;box-shadow:0 0 0 1px rgba(255,255,255,.9)}
+.hs.P{background:#0e1a2c;color:#fff}.hs.S{background:#cfdcf7;color:#14213d}.hs.L{background:#fff;color:#555}
+.hc.sel{outline:2px solid var(--fg);outline-offset:-2px}
+.hc .hdot{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.17</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.18</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -290,6 +303,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.18</h4><ul><li>Phone layout: the list sheet now opens at about 40 percent of the screen (drag the handle or tap it for smaller or full height).</li><li>Weather summary on phones: each property is a card with all 12 months in two rows of six, so nothing scrolls sideways. Each cell shows the month, temperature, season badge and rain bar.</li></ul>
     <h4>v1.17</h4><ul><li>Simpler left list: just property names (with a small weather chip when the weather bar is on, and marks for favorites, visited and trip stops). Tap a name to open it on the map, where the links and the star, check, trip and weather buttons are.</li><li>The Weather tab is now a Weather summary button that opens the full screen heatmap directly.</li><li>New View all button: a full screen list of the properties in view with their Official site, TripAdvisor and Google Maps links.</li></ul>
     <h4>v1.16</h4><ul><li>Heatmap Overview: the season marker is now a larger badge (dark P, light blue S, white L) and the rain bar is thicker, outlined in white and gets thicker the wetter the month. Cells are taller.</li></ul>
     <h4>v1.15</h4><ul><li>The Weather tab and its full screen view now show a color key under the lens menu (temperature scale, season letters, rain bars) and a Key button that opens the full explanation.</li></ul>
@@ -640,7 +654,7 @@ var M=D.map(function(d,i){
   return m;
 });
 
-function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.52),full:h-56}}
+function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.40),full:h-56}}
 function setSheet(s){
   if(!isMob()){side.style.height='';sheetH=0;sheetState=s;return}
   sheetState=s;sheetH=stops()[s];side.style.height=sheetH+'px';
@@ -864,7 +878,7 @@ lg.onAdd=function(){var c=L.DomUtil.create('div','legend'+(isMob()?' closed':'')
   L.DomEvent.disableClickPropagation(c);return c};
 lg.addTo(map);
 
-setSheet('peek');
+setSheet(isMob()?'half':'peek');
 var vt=null;
 function listSoon(){clearTimeout(vt);vt=setTimeout(function(){if(viewOnly){renderList();renderHeat()}},120)}
 map.on('moveend',listSoon);
@@ -904,6 +918,17 @@ function lensNote(){
     season:'Typical tourist season: P peak, S shoulder, L low. These are my approximations by destination type.'}[heatLens];
   return t+' Tap a month to color the map.';
 }
+function heatCellCard(d,p,m){
+  var st=monthStat(d,m),cls='hc'+(wxOn&&wxMonth===m?' sel':'');
+  if(!st||!p)return '<div class="'+cls+'" data-m="'+m+'"><span class="hmn">'+MN[m]+'</span></div>';
+  var L=heatLens,tv=tbasis==='avg'?st.mean:st.hi,c,sty='',txt='',extra='';
+  if(L==='score'){var sc=p.sc[m];sty='background:'+scColor(sc)+';color:'+scText(sc);txt=sc;if(sweet(d,m))extra='<i class="hdot"></i>'}
+  else if(L==='temp'){c=tcColor(tv);sty='background:'+c+';color:'+lumText(c);txt=tnum(tv)}
+  else if(L==='rain'){sty='background:'+RCOL[st.rc]+';color:'+RTXT[st.rc];txt=st.rain.toFixed(1)}
+  else if(L==='season'){sty='background:'+SCOL[st.s]+';color:'+STXT[st.s];txt=st.s}
+  else{c=tcColor(tv);sty='background:'+c+';color:'+lumText(c)+(st.rc>0?';box-shadow:inset 0 -'+RTH[st.rc]+'px 0 '+RBAR[st.rc]+',inset 0 -'+(RTH[st.rc]+1)+'px 0 rgba(255,255,255,.9)':'');txt=tnum(tv);extra='<span class="hs '+st.s+'">'+st.s+'</span>'}
+  return '<div class="'+cls+'" data-m="'+m+'" style="'+sty+'"><span class="hmn">'+MN[m]+'</span>'+extra+'<b>'+txt+'</b></div>';
+}
 function heatHtml(big){
   var rows=filtered(true);
   if(heatSort==='month'&&typeof wxMonth==='number')rows.sort(function(x,y){var a=monthScore(D[x].n,wxMonth),b2=monthScore(D[y].n,wxMonth);return (b2==null?-1:b2)-(a==null?-1:a)});
@@ -914,10 +939,21 @@ function heatHtml(big){
     +'<label><input type="checkbox" class="hview"'+(viewOnly?' checked':'')+'> Only what is in the map view</label>'
     +'<button type="button" class="btn hkey">Key</button>'
     +'<span>'+rows.length+' of '+D.length+'</span></div>';
-  h+='<div class="hmc">'+lensNote()+'</div>'+lensLegend();
+  var mob=isMob();
+  h+=(mob?'<div class="hmc">Tap a month to color the map. Tap a name to open it. Key explains the colors.</div>':'<div class="hmc">'+lensNote()+'</div>')+lensLegend();
   if(climState.loading)h+='<div class="hmc">Loading climate data '+(climState.done+climState.failed)+'/'+climState.total+'...</div>';
   else if(climState.failed)h+='<div class="hmc">'+climState.failed+' places failed to load. <button type="button" class="linkbtn hretry">Retry</button></div>';
   if(!rows.length)h+='<p class="note" style="padding:12px">No properties in this map view. Zoom out or untick "Only what is in the map view".</p>';
+  var note='<div class="note" style="padding:8px 12px">Climate: NASA POWER 1991-2020 averages (coarse grid). Scores are estimates from daytime highs, rain and humidity. Tourist seasons are approximations.</div>';
+  if(mob){
+    rows.forEach(function(ix){
+      var d=D[ix],p=peakInfo(d.n);
+      h+='<div class="hcard" data-i="'+ix+'"><div class="hnm"><b>'+esc(d.n)+'</b><span>'+(p?'Best: '+p.best.map(function(x){return MN[x]}).join(', '):'')+'</span></div><div class="hgrid">';
+      for(var m=0;m<12;m++)h+=heatCellCard(d,p,m);
+      h+='</div></div>';
+    });
+    return h+note;
+  }
   h+='<table class="hm'+(big?' big':'')+'"><thead><tr><th class="nm">Property</th><th>Best</th>';
   MN.forEach(function(m,k){h+='<th data-m="'+k+'"'+(wxOn&&wxMonth===k?' class="cur"':'')+'>'+m+'</th>'});
   h+='</tr></thead><tbody>';
@@ -945,10 +981,10 @@ function openFull(){fullOpen=true;$('wxfull').hidden=false;renderHeat();loadClim
 function closeFull(){fullOpen=false;$('wxfull').hidden=true}
 $('fclose').onclick=closeFull;
 function heatClick(e){
-  var th=e.target.closest('th[data-m]'),td=e.target.closest('td.c'),nm=e.target.closest('td.nm');
+  var th=e.target.closest('th[data-m]'),td=e.target.closest('td.c')||e.target.closest('.hc'),nm=e.target.closest('td.nm')||e.target.closest('.hnm');
   var m=th?th.getAttribute('data-m'):(td?td.getAttribute('data-m'):null);
   if(m!==null){wxMonth=+m;ls('fs_wxm',wxMonth);if(!wxOn){wxOn=true;ls('fs_wx',true)}wxUi();wxRefresh();return}
-  if(nm){var tr=nm.closest('tr');if(tr){if(fullOpen)closeFull();openProp(+tr.getAttribute('data-i'))}}
+  if(nm){var tr=nm.closest('tr')||nm.closest('.hcard');if(tr){if(fullOpen)closeFull();openProp(+tr.getAttribute('data-i'))}}
 }
 $('wxsum').addEventListener('click',heatClick);
 $('fbody').addEventListener('click',heatClick);
