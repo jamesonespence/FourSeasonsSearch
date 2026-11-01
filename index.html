@@ -110,21 +110,52 @@ input{margin-bottom:6px}
 .credit .cr-name{margin-top:2px;font-family:var(--f-disp);font-weight:800;font-size:28px;line-height:1.1;letter-spacing:.07em;text-transform:uppercase;color:var(--fg)}
 .credit .cr-date{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;letter-spacing:.22em;text-transform:uppercase}
 .credit .cr-date:before,.credit .cr-date:after{content:"";width:28px;height:1px;background:var(--line)}
-@media(max-width:700px){#app{flex-direction:column-reverse}#side{width:100%;max-width:none;height:52%}#map{height:48%;flex:none}}
+#grab,#menubtn,#filterbtn{display:none}
+.srch{display:flex;gap:6px;margin-bottom:6px}
+.srch input{margin:0}
+.sm{display:none}
+.legend .lgh{font:inherit;font-weight:600;background:none;border:0;color:inherit;cursor:pointer;padding:0}
+.legend.closed .lgb{display:none}
+@media(max-width:700px){
+ body{overflow:hidden}
+ #app{display:block}
+ #map{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;width:100%}
+ #side{position:fixed;left:0;right:0;bottom:0;width:100%;max-width:none;height:150px;border-right:0;border-radius:16px 16px 0 0;box-shadow:0 -4px 18px rgba(0,0,0,.35);z-index:1200;overflow:hidden;transition:height .22s ease}
+ #side.drag{transition:none}
+ #grab{display:block;padding:10px 0 6px;touch-action:none;cursor:grab}
+ #grab i{display:block;width:46px;height:5px;border-radius:3px;background:var(--muted);opacity:.5;margin:0 auto}
+ #top h1{display:none}
+ #top{padding-top:4px}
+ #menubtn,#filterbtn{display:inline-block}
+ .verbar{padding-top:0}
+ .vbtns{display:none;flex-basis:100%;justify-content:flex-end;gap:16px}
+ #side.mopen .vbtns{display:flex}
+ #filters{display:none}
+ #side.fopen #filters{display:block}
+ .srch .btn{width:auto;flex:none;padding:8px 12px}
+ .sf{display:none}.sm{display:inline}
+ .it .lk{display:none}
+ .it{padding:7px 12px}
+ .leaflet-control-zoom{display:none}
+ .pin{width:18px;height:18px}
+ .mc{width:34px;height:34px;margin:3px;font-size:14px}
+}
 </style></head><body>
 <div id="app">
 <div id="side">
-  <div class="verbar"><span>Four Seasons Map v1.5</span><span class="vbtns"><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
+  <div class="verbar"><span>Four Seasons Map v1.6</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
-    <div class="grid2"><select id="reg" aria-label="Region"></select><select id="typ" aria-label="Type"></select></div>
-    <div class="grid2"><select id="sts" aria-label="Show"></select><button type="button" id="nearbtn" class="btn">Near me</button></div>
-    <input id="q" placeholder="Search by name" aria-label="Search by name">
+    <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
+    <div id="filters"><div class="grid2"><select id="reg" aria-label="Region"></select><select id="typ" aria-label="Type"></select></div>
+    <div class="grid2"><select id="sts" aria-label="Show"></select><button type="button" id="nearbtn" class="btn">Near me</button></div></div>
     <div id="stats"></div><div id="msg" hidden></div>
   </div>
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.6</h4><ul><li>Mobile layout: full-screen map with a pull-up list (drag the handle or tap it to cycle peek, half and full).</li><li>Filters tucked behind a Filters button, header links behind Menu, compact one-line stats, compact list rows, smaller pins and clusters.</li><li>The legend is now a collapsible Key button. Tapping a property in the list drops the sheet so you can see the pin and popup.</li></ul>
     <h4>v1.5</h4><ul><li>Fixed the map background: switched to OpenStreetMap tiles (the previous provider started requiring an API key). Dark mode now darkens the same map.</li></ul>
     <h4>v1.4</h4><ul><li>Nearby pins now merge into numbered clusters that split as you zoom.</li><li>Near me button: finds the closest properties and shows distances.</li><li>Favorites and Visited: tap the star or check on any property. Saved on your device, with a Show filter.</li><li>Dark mode (Auto, Light or Dark) and a cleaner basemap.</li><li>Type filter and pin shapes: City hotels (circle), Resorts (rounded square) and Retreats (diamond).</li><li>Stats strip showing counts by type, favorites and visited.</li><li>Share button: copies a link that remembers your filters (works on the live site).</li><li>Trip planner: add properties, reorder them, and see the route and distances on the map.</li></ul>
     <h4>v1.3</h4><ul><li>New map pins: larger ringed markers with a center dot and shadow that grow on hover, a region color legend with counts, and cleaner labels and popups.</li></ul>
@@ -151,10 +182,13 @@ function ls(k,v){try{if(v===undefined){var s=localStorage.getItem(k);return s?JS
 var fav=new Set(ls('fs_fav')||[]),vis=new Set(ls('fs_vis')||[]),trip=(ls('fs_trip')||[]).filter(function(n){return D.some(function(d){return d.n===n})});
 var NI={};D.forEach(function(d,i){NI[d.n]=i});
 var userPos=null,uMarker=null,view='list';
+function isMob(){try{return window.matchMedia('(max-width:700px)').matches}catch(e){return false}}
+var side=$('side'),sheetState='peek',sheetH=0;
 
 /* map */
 var BND=[[-85,-180],[85,180]];
-var map=L.map('map',{minZoom:2,maxBounds:BND,maxBoundsViscosity:1.0}).setView([25,10],2);
+var map=L.map('map',{minZoom:2,maxBounds:BND,maxBoundsViscosity:1.0,attributionControl:false}).setView([25,10],2);
+L.control.attribution({position:isMob()?'topleft':'bottomright'}).addTo(map);
 var tl=null;
 function setTiles(t){
   if(tl)return;
@@ -190,10 +224,40 @@ function popHtml(i){
 }
 var M=D.map(function(d,i){
   var m=L.marker([d.la,d.lo],{icon:iconFor(d),riseOnHover:true});
-  m.bindPopup(function(){return popHtml(i)},{minWidth:210});
+  m.bindPopup(function(){return popHtml(i)},{minWidth:isMob()?190:210,maxWidth:isMob()?260:300,autoPanPaddingTopLeft:[10,isMob()?64:10],autoPanPaddingBottomRight:[10,isMob()?170:10]});
   m.bindTooltip(d.n,{direction:'top',offset:[0,-14]});
   return m;
 });
+
+function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.52),full:h-56}}
+function setSheet(s){
+  if(!isMob()){side.style.height='';sheetH=0;sheetState=s;return}
+  sheetState=s;sheetH=stops()[s];side.style.height=sheetH+'px';
+}
+function ensureHalf(){if(isMob()&&sheetState==='peek')setSheet('half')}
+function fit(pts,maxZ){
+  var o={maxZoom:maxZ};
+  if(isMob()){o.paddingTopLeft=[24,64];o.paddingBottomRight=[24,sheetH+24]}else o.padding=[40,40];
+  map.fitBounds(pts,o);
+}
+(function(){
+  var g=$('grab'),dragY=null,dragH=0,moved=false;
+  g.addEventListener('pointerdown',function(e){if(!isMob())return;dragY=e.clientY;dragH=side.offsetHeight;moved=false;side.classList.add('drag');try{g.setPointerCapture(e.pointerId)}catch(x){}});
+  g.addEventListener('pointermove',function(e){if(dragY==null)return;var dy=dragY-e.clientY;if(Math.abs(dy)>4)moved=true;var s=stops();side.style.height=Math.max(s.peek,Math.min(s.full,dragH+dy))+'px'});
+  function end(){
+    if(dragY==null)return;side.classList.remove('drag');
+    var s=stops(),h=side.offsetHeight,best='peek';
+    if(!moved)best=sheetState==='peek'?'half':(sheetState==='half'?'full':'peek');
+    else['peek','half','full'].forEach(function(k){if(Math.abs(s[k]-h)<Math.abs(s[best]-h))best=k});
+    dragY=null;setSheet(best);
+  }
+  g.addEventListener('pointerup',end);g.addEventListener('pointercancel',end);
+  window.addEventListener('resize',function(){setSheet(sheetState)});
+  map.on('click',function(){if(isMob()&&sheetState!=='peek')setSheet('peek')});
+  $('menubtn').onclick=function(){side.classList.toggle('mopen')};
+  $('filterbtn').onclick=function(){side.classList.toggle('fopen');ensureHalf()};
+  $('q').addEventListener('focus',ensureHalf);
+})();
 
 /* filters */
 var reg=$('reg'),typ=$('typ'),sts=$('sts'),q=$('q');
@@ -214,7 +278,9 @@ function filtered(){var a=[];D.forEach(function(d,i){if(passes(d))a.push(i)});if
 function note(t){var m=$('msg');m.textContent=t;m.hidden=false;clearTimeout(note.t);note.t=setTimeout(function(){m.hidden=true},7000)}
 function stats(n){
   var c={City:0,Resort:0,Retreat:0};D.forEach(function(d){c[d.ty]++});
-  $('stats').innerHTML='<span>Showing <b>'+n+'</b> of '+D.length+'</span><span>City <b>'+c.City+'</b></span><span>Resort <b>'+c.Resort+'</b></span><span>Retreat <b>'+c.Retreat+'</b></span><span>Favorites <b>'+fav.size+'</b></span><span>Visited <b>'+vis.size+'</b></span>';
+  $('stats').innerHTML='<span class="sf">Showing <b>'+n+'</b> of '+D.length+'</span><span class="sf">City <b>'+c.City+'</b></span><span class="sf">Resort <b>'+c.Resort+'</b></span><span class="sf">Retreat <b>'+c.Retreat+'</b></span><span class="sf">Favorites <b>'+fav.size+'</b></span><span class="sf">Visited <b>'+vis.size+'</b></span><span class="sm"><b>'+n+'</b> shown - <b>'+fav.size+'</b> favorites - <b>'+vis.size+'</b> visited</span>';
+  var nf=(reg.value!=='All regions'?1:0)+(typ.value!=='All types'?1:0)+(sts.value!=='Show all'?1:0);
+  $('filterbtn').textContent=nf?'Filters ('+nf+')':'Filters';
 }
 function renderList(){
   var idx=filtered(),h='';
@@ -230,7 +296,7 @@ function draw(fit){
   var idx=renderList(),arr=idx.map(function(i){return M[i]});
   cl.clearLayers();
   if(cl.addLayers)cl.addLayers(arr);else arr.forEach(function(m){cl.addLayer(m)});
-  if(fit!==false&&idx.length)map.fitBounds(idx.map(function(i){return [D[i].la,D[i].lo]}),{padding:[40,40],maxZoom:6});
+  if(fit!==false&&idx.length)window.fit(idx.map(function(i){return [D[i].la,D[i].lo]}),6);
   writeHash();
 }
 
@@ -243,6 +309,7 @@ function afterChange(i){
 }
 function openProp(i){
   var m=M[i];
+  if(isMob())setSheet('peek');
   function go(){m.openPopup()}
   if(cl.zoomToShowLayer&&cl.hasLayer(m)){cl.zoomToShowLayer(m,go)}
   else{map.setView([D[i].la,D[i].lo],8);setTimeout(go,300)}
@@ -299,7 +366,7 @@ function tripChanged(fit){
     try{navigator.clipboard.writeText(t).then(function(){note('Trip copied.')},function(){note('Copy not allowed here.')})}catch(e){note('Copy not allowed here.')}
   };
   if($('tclear'))$('tclear').onclick=function(){trip=[];ls('fs_trip',trip);tripChanged(false);M.forEach(function(m,j){m.setIcon(iconFor(D[j]))});renderList()};
-  if(fit&&pts.length>1)map.fitBounds(pts,{padding:[50,50],maxZoom:6});
+  if(fit&&pts.length>1)window.fit(pts,6);
 }
 
 /* near me */
@@ -312,13 +379,14 @@ $('nearbtn').onclick=function(){
     $('nearbtn').textContent='Clear location';
     var idx=renderList();$('list').scrollTop=0;
     var near=idx.slice(0,3).map(function(i){return [D[i].la,D[i].lo]}).concat([userPos]);
-    map.fitBounds(near,{padding:[50,50],maxZoom:8});
+    ensureHalf();window.fit(near,8);
   },fail,{timeout:10000})}catch(e){fail()}
 };
 
 /* views, theme, share, hash */
 function showView(v){
   view=v;
+  if(v!=='list')ensureHalf();
   $('list').hidden=v!=='list';$('trip').hidden=v!=='trip';$('notes').hidden=v!=='notes';
   $('tabl').classList.toggle('on',v==='list');$('tabt').classList.toggle('on',v==='trip');
   $('relbtn').textContent=v==='notes'?'Back':'Release notes';$('relbtn').setAttribute('aria-expanded',v==='notes'?'true':'false');
@@ -348,13 +416,15 @@ reg.onchange=typ.onchange=sts.onchange=function(){draw(true)};
 q.oninput=function(){draw(true)};
 
 /* legend */
-var lg=L.control({position:'bottomleft'});
-lg.onAdd=function(){var c=L.DomUtil.create('div','legend');
-  c.innerHTML=Object.keys(cols).map(function(r){var n=D.filter(function(d){return d.r===r}).length;return '<div><i style="background:'+cols[r]+'"></i>'+esc(r)+' ('+n+')</div>'}).join('')
-   +'<hr><div><i style="background:var(--muted)"></i>City hotel</div><div><s style="border-radius:3px"></s>Resort</div><div><s style="transform:rotate(45deg) scale(.85)"></s>Retreat</div>';
+var lg=L.control({position:isMob()?'topright':'bottomleft'});
+lg.onAdd=function(){var c=L.DomUtil.create('div','legend'+(isMob()?' closed':''));
+  c.innerHTML='<button type="button" class="lgh">Key &#9662;</button><div class="lgb">'+Object.keys(cols).map(function(r){var n=D.filter(function(d){return d.r===r}).length;return '<div><i style="background:'+cols[r]+'"></i>'+esc(r)+' ('+n+')</div>'}).join('')
+   +'<hr><div><i style="background:var(--muted)"></i>City hotel</div><div><s style="border-radius:3px"></s>Resort</div><div><s style="transform:rotate(45deg) scale(.85)"></s>Retreat</div></div>';
+  c.querySelector('.lgh').onclick=function(){c.classList.toggle('closed')};
   L.DomEvent.disableClickPropagation(c);return c};
 lg.addTo(map);
 
+setSheet('peek');
 readHash();
 draw(true);
 tripChanged(false);
