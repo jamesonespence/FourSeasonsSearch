@@ -26,11 +26,10 @@
 .leaflet-tooltip{position:absolute;padding:6px;background:#fff;border:1px solid #fff;border-radius:3px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
 </style>
 <style>
-:root{--bg:#f1f4f8;--surface:#fff;--fg:#0e1a2c;--muted:#58687e;--line:#d8dfe9;--a:#1b4f9c;--b:#c8102e;--track:#e6ebf2;--ocean:#cfe0ea;--gold:#b8892b;--f-disp:'Big Shoulders Display','Arial Narrow',Impact,sans-serif}
-[data-theme="dark"]{--bg:#0a111e;--surface:#121b2d;--fg:#e8eef8;--muted:#92a3bb;--line:#233049;--a:#5b9bff;--b:#ff5a6e;--track:#1e2a42;--ocean:#0b1626;--gold:#e0b04a;color-scheme:dark}
+:root{--bg:#f1f4f8;--surface:#fff;--fg:#0e1a2c;--muted:#58687e;--line:#d8dfe9;--a:#1b4f9c;--b:#c8102e;--track:#e6ebf2;--ocean:#e4e7ea;--gold:#b8892b;--f-disp:'Big Shoulders Display','Arial Narrow',Impact,sans-serif}
+[data-theme="dark"]{--bg:#0a111e;--surface:#121b2d;--fg:#e8eef8;--muted:#92a3bb;--line:#233049;--a:#5b9bff;--b:#ff5a6e;--track:#1e2a42;--ocean:#222;--gold:#e0b04a;color-scheme:dark}
 .vo{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;color:var(--muted);position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);z-index:2;cursor:pointer}
 .vo input{width:auto;margin:0;padding:0}
-[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;height:100%;font-family:'Barlow','Helvetica Neue',Arial,sans-serif;color:var(--fg);background:var(--bg)}
@@ -146,7 +145,7 @@ input{margin-bottom:6px}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.8</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.9</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -157,6 +156,7 @@ input{margin-bottom:6px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.9</h4><ul><li>Map labels are now in English everywhere (the previous map showed local languages, for example Chinese place names). Dark mode now uses a true dark map. A Labels toggle in the header (Menu on phones) turns place names off.</li></ul>
     <h4>v1.8</h4><ul><li>The list now shows only the properties in the current map view, and updates as you pan and zoom. Untick the box above the list to see everything. On phones, the part of the map hidden behind the list is not counted.</li></ul>
     <h4>v1.7</h4><ul><li>Pins no longer group by default: they just overlap, and the one you hover or tap comes to the front. A Grouping toggle in the header (Menu on phones) brings the numbered clusters back.</li></ul>
     <h4>v1.6</h4><ul><li>Mobile layout: full-screen map with a pull-up list (drag the handle or tap it to cycle peek, half and full).</li><li>Filters tucked behind a Filters button, header links behind Menu, compact one-line stats, compact list rows, smaller pins and clusters.</li><li>The legend is now a collapsible Key button. Tapping a property in the list drops the sheet so you can see the pin and popup.</li></ul>
@@ -194,15 +194,25 @@ var BND=[[-85,-180],[85,180]];
 var map=L.map('map',{minZoom:2,maxBounds:BND,maxBoundsViscosity:1.0,attributionControl:false}).setView([25,10],2);
 L.control.attribution({position:isMob()?'topleft':'bottomright'}).addTo(map);
 var tl=null;
+var tlB=null,tlR=null,labelsOn=ls('fs_labels')!==false;
+var ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/';
 function setTiles(t){
-  if(tl)return;
-  tl=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{noWrap:true,bounds:BND,maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+  var k=t==='dark'?'World_Dark_Gray_':'World_Light_Gray_';
+  if(tlB)map.removeLayer(tlB);
+  if(tlR)map.removeLayer(tlR);
+  var o={noWrap:true,bounds:BND,maxNativeZoom:16,maxZoom:18};
+  tlB=L.tileLayer(ESRI+k+'Base/MapServer/tile/{z}/{y}/{x}',Object.assign({attribution:'Tiles &copy; Esri'},o)).addTo(map);
+  tlR=L.tileLayer(ESRI+k+'Reference/MapServer/tile/{z}/{y}/{x}',Object.assign({zIndex:5},o));
+  if(labelsOn)tlR.addTo(map);
 }
 var themePref=ls('fs_theme')||'auto';
 function effTheme(){if(themePref!=='auto')return themePref;try{return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){return 'light'}}
 function applyTheme(){var t=effTheme();document.documentElement.setAttribute('data-theme',t);$('themebtn').textContent='Theme: '+themePref.charAt(0).toUpperCase()+themePref.slice(1);setTiles(t)}
 $('themebtn').onclick=function(){themePref=themePref==='auto'?'light':(themePref==='light'?'dark':'auto');ls('fs_theme',themePref);applyTheme()};
 applyTheme();
+function syncLbl(){$('lblbtn').textContent='Labels: '+(labelsOn?'On':'Off')}
+$('lblbtn').onclick=function(){labelsOn=!labelsOn;ls('fs_labels',labelsOn);if(labelsOn)tlR.addTo(map);else map.removeLayer(tlR);syncLbl()};
+syncLbl();
 
 var clusterG=(typeof L.markerClusterGroup==='function')?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:42,spiderfyOnMaxZoom:true,
   iconCreateFunction:function(c){return L.divIcon({html:'<div class="mc"><span>'+c.getChildCount()+'</span></div>',className:'mcwrap',iconSize:[40,40]})}}):L.layerGroup();
