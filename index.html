@@ -174,7 +174,7 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:11px}
 .hm thead th.cur{color:var(--b)}
 .hm th.nm,.hm td.nm{position:sticky;left:0;background:var(--surface);z-index:2;text-align:left;padding:0 8px;min-width:132px;max-width:132px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line)}
 .hm thead th.nm{z-index:4}
-.hm td.c{width:28px;min-width:28px;height:26px;font:800 11px var(--f-disp);position:relative;border-bottom:1px solid var(--surface)}
+.hm td.c{width:36px;min-width:36px;height:34px;padding:0 4px 4px 0;vertical-align:middle;font:800 11px var(--f-disp);position:relative;border-bottom:1px solid var(--surface)}
 .hm td.c.sel{outline:2px solid var(--fg);outline-offset:-2px}
 .hm td.c.sh::after{content:"";position:absolute;right:2px;top:2px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
 .hm td.bst{font-size:11px;color:var(--muted);padding:0 8px;white-space:nowrap;text-align:left;border-bottom:1px solid var(--line);min-width:96px}
@@ -197,7 +197,7 @@ table.wmt{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
 .fhead{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
 .fhead b{font-family:var(--f-disp);font-size:22px;letter-spacing:.04em;text-transform:uppercase}
 #fbody{flex:1;overflow:auto;min-height:0}
-table.hm.big td.c{width:48px;min-width:48px;height:34px;font-size:14px}
+table.hm.big td.c{width:58px;min-width:58px;height:46px;font-size:15px;padding:0 6px 5px 0}
 table.hm.big th.nm,table.hm.big td.nm{min-width:220px;max-width:220px;font-size:13px}
 table.hm.big thead th{font-size:12px;padding:8px 0}
 .hmc .btn{width:auto;padding:5px 10px;font-size:12px}
@@ -225,8 +225,13 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .vd{margin:6px 0;padding:6px 8px;border-left:3px solid var(--gold);background:var(--track);border-radius:4px;font-size:12.5px;line-height:1.4}
 .sp{display:inline-block;padding:1px 7px;border-radius:9px;font-size:11px;font-weight:700}
 .sp-P{background:#2d3a5a;color:#fff}.sp-S{background:#9db4e0;color:#14213d}.sp-L{background:#e8edf5;color:#14213d}
-.hm td.c.ov::before{content:attr(data-s);position:absolute;left:2px;top:1px;font:700 7px sans-serif;opacity:.9}
-.hm.big td.c.ov::before{font-size:9px}
+.ov::before{content:attr(data-s);position:absolute;left:3px;top:3px;min-width:13px;padding:0 3px;border-radius:4px;font:800 10px/14px var(--f-disp);letter-spacing:.02em;text-align:center;box-shadow:0 0 0 1px rgba(255,255,255,.9)}
+.ov[data-s="P"]::before{background:#0e1a2c;color:#fff}
+.ov[data-s="S"]::before{background:#cfdcf7;color:#14213d}
+.ov[data-s="L"]::before{background:#fff;color:#555}
+.hm.big td.c.ov::before{font-size:12px;line-height:17px;min-width:17px;left:4px;top:4px}
+.kcell{position:relative}
+.hm td.c.ov{text-align:right}
 .hmc select.hlens,.hmc select.hsort{width:auto;padding:5px}
 
 #wxkey{position:fixed;top:0;left:0;right:0;bottom:0;z-index:3100;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:12px}
@@ -252,7 +257,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.15</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.16</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -263,6 +268,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.16</h4><ul><li>Heatmap Overview: the season marker is now a larger badge (dark P, light blue S, white L) and the rain bar is thicker, outlined in white and gets thicker the wetter the month. Cells are taller.</li></ul>
     <h4>v1.15</h4><ul><li>The Weather tab and its full screen view now show a color key under the lens menu (temperature scale, season letters, rain bars) and a Key button that opens the full explanation.</li></ul>
     <h4>v1.14</h4><ul><li>New Key button in the weather bar: explains the temperature colors, season rings, rain drops, the overall score, pin shapes and heatmap lenses, with real samples.</li></ul>
     <h4>v1.13</h4><ul><li>Pins now show three things at once: fill color and number = temperature (daytime high, or daily average with the Temp toggle), ring = tourist season (solid peak, dashed shoulder, none low), blue drop = rain (bigger is wetter). The old single score is still there under Overall score.</li><li>Goal presets: Beach, Sightseeing, Quiet and pleasant, Ski, or a Custom range. They filter the map, list and heatmap for the month you pick.</li><li>Good but off-peak now means good weather (score 65+) in shoulder or low tourist season.</li><li>Heatmap lenses: Overview, Score, Temperature, Rain, Season.</li><li>Plain-language verdict per month in popups and the weather dialog, for example "mild, mostly dry, shoulder season. Good for sightseeing; not beach weather."</li><li>Tourist seasons are my own approximations by destination type, not official data, and sea temperature is not included yet.</li></ul>
@@ -360,7 +366,7 @@ var wxView=ls('fs_wxview')||'details',tbasis=ls('fs_tb')||'high',wxGoal=ls('fs_g
 var wxCustom=ls('fs_gcustom')||{tmin:20,tmax:30,rain:1,seas:'PSL'};
 var SEAS={P:'Peak season',S:'Shoulder season',L:'Low season'};
 var RAINL=['Dry','Some showers','Wet','Monsoon-like'];
-var RCOL=['#dbe9f6','#9cc4ea','#4f94d4','#1f5fa8'],RTXT=['#1a1a1a','#1a1a1a','#fff','#fff'],RBAR=['','#9cc4ea','#3a86d6','#1f4f9c'];
+var RCOL=['#dbe9f6','#9cc4ea','#4f94d4','#1f5fa8'],RTXT=['#1a1a1a','#1a1a1a','#fff','#fff'],RBAR=['','#74b4f5','#2f7fe0','#12306b'],RTH=[0,4,6,8];
 var SCOL={P:'#2d3a5a',S:'#9db4e0',L:'#e8edf5'},STXT={P:'#fff',S:'#14213d',L:'#14213d'};
 var TST=[[-10,'#27408b'],[5,'#3c7dc4'],[15,'#59b0c9'],[22,'#5cb85c'],[27,'#f0c93b'],[32,'#e8872b'],[38,'#c0392b']];
 var GOALTXT={any:'',beach:'Beach: high 27C or more, dry or only some showers (sea temperature is not included).',sights:'Sightseeing: high 18 to 27C, dry or only some showers.',quiet:'Quiet and pleasant: high 20 to 28C, dry or some showers, shoulder or low season.',ski:'Ski: ski resorts with a high of 4C or less.',custom:'Custom range (see the controls below).'};
@@ -841,7 +847,7 @@ function heatCell(d,p,m){
   else if(L==='temp'){c=tcColor(tv);sty='background:'+c+';color:'+lumText(c);txt=tnum(tv)}
   else if(L==='rain'){sty='background:'+RCOL[st.rc]+';color:'+RTXT[st.rc];txt=st.rain.toFixed(1)}
   else if(L==='season'){sty='background:'+SCOL[st.s]+';color:'+STXT[st.s];txt=st.s}
-  else{c=tcColor(tv);sty='background:'+c+';color:'+lumText(c)+(st.rc>0?';box-shadow:inset 0 -4px 0 '+RBAR[st.rc]:'');txt=tnum(tv);attr=' data-s="'+st.s+'"';cls+=' ov'}
+  else{c=tcColor(tv);sty='background:'+c+';color:'+lumText(c)+(st.rc>0?';box-shadow:inset 0 -'+RTH[st.rc]+'px 0 '+RBAR[st.rc]+',inset 0 -'+(RTH[st.rc]+1)+'px 0 rgba(255,255,255,.9)':'');txt=tnum(tv);attr=' data-s="'+st.s+'"';cls+=' ov'}
   return '<td class="'+cls+'" data-m="'+m+'"'+attr+' style="'+sty+'">'+txt+'</td>';
 }
 function lensLegend(){
@@ -849,7 +855,7 @@ function lensLegend(){
   var tgrad='<div class="kst">'+[-10,5,15,22,27,32,38].map(function(t){var c=tcColor(t);return '<span style="background:'+c+';color:'+lumText(c)+'">'+tnum(t)+'°</span>'}).join('')+'</div>';
   var rain=RAINL.map(function(l,k){return sw(k===0?'transparent':RBAR[k],'',l)}).join('');
   var h='';
-  if(heatLens==='overview')h=tgrad+'<span class="hsw">Season letter: P peak, S shoulder, L low</span><span class="hsw">Bottom bar = rain:</span>'+rain.replace(sw('transparent','','Dry'),'<span class="hsw"><i style="background:var(--track)"></i>Dry (no bar)</span>');
+  if(heatLens==='overview')h=tgrad+'<span class="hsw">Season badge: P dark = peak, S light blue = shoulder, L white = low</span><span class="hsw">Bottom bar = rain:</span>'+rain.replace(sw('transparent','','Dry'),'<span class="hsw"><i style="background:var(--track)"></i>Dry (no bar)</span>');
   else if(heatLens==='temp')h=tgrad;
   else if(heatLens==='score')h='<div class="kst">'+[[0,'#c0392b'],[25,scColor(25)],[50,'#e8b923'],[75,scColor(75)],[100,'#1e8449']].map(function(x){return '<span style="background:'+x[1]+';color:'+scText(x[0])+'">'+x[0]+'</span>'}).join('')+'</div><span class="hsw">White dot = good weather (65+) in shoulder or low season</span>';
   else if(heatLens==='rain')h=RAINL.map(function(l,k){return sw(RCOL[k],'',l+' ('+['under 0.8','0.8-2.5','2.5-5','over 5'][k]+' mm/day)')}).join('');
@@ -857,7 +863,7 @@ function lensLegend(){
   return '<div class="hleg">'+h+'</div>';
 }
 function lensNote(){
-  var t={overview:'Cell color = temperature. Corner letter = season (P peak, S shoulder, L low). Blue bar at the bottom = rain (light: some showers, medium: wet, dark: monsoon-like).',
+  var t={overview:'Cell color = temperature. Corner badge = season (P dark = peak, S light blue = shoulder, L white = low). Blue bar at the bottom = rain (light: some showers, medium: wet, dark: monsoon-like).',
     score:'Overall weather score. White dot = good weather (65+) in shoulder or low season.',
     temp:'Temperature, '+(tbasis==='avg'?'daily average':'daytime high')+' ('+units+').',
     rain:'Average rain in mm per day. Darker blue = wetter.',
@@ -940,7 +946,7 @@ function keyHtml(){
   h+='<div class="krow">'+samp('fav','#8a94a3','')+'<div class="kt"><b>Gold outer ring: favorite</b></div></div>';
   h+='<div class="krow">'+samp('','#8a94a3','?')+'<div class="kt"><b>Gray with ?: no weather data loaded yet</b></div></div>';
   h+='<h4>Heatmap (Weather tab)</h4>';
-  h+='<div class="krow"><span class="kcell" style="background:#a9c14b;color:#1a1a1a;box-shadow:inset 0 -4px 0 #3a86d6">25</span><div class="kt"><b>Overview</b><small>Color = temperature. Small corner letter = season (P, S, L). Blue bar = rain: light is some showers, medium is wet, dark is monsoon-like.</small></div></div>';
+  h+='<div class="krow"><span class="kcell ov" data-s="P" style="background:#a9c14b;color:#1a1a1a;width:40px;height:30px;line-height:36px;box-shadow:inset 0 -6px 0 #2f7fe0,inset 0 -7px 0 rgba(255,255,255,.9)">25</span><div class="kt"><b>Overview</b><small>Color = temperature. Small corner letter = season (P, S, L). Blue bar = rain: light is some showers, medium is wet, dark is monsoon-like.</small></div></div>';
   h+='<div class="krow"><span class="kcell" style="background:#53923f;color:#fff">87</span><div class="kt"><b>Score</b><small>Overall weather score, red to green.</small></div></div>';
   h+='<div class="krow"><span class="kcell" style="background:#4f94d4;color:#fff">2.5</span><div class="kt"><b>Rain</b><small>mm per day. Darker blue is wetter.</small></div></div>';
   h+='<div class="krow"><span class="kcell" style="background:#9db4e0;color:#14213d">S</span><div class="kt"><b>Season</b><small>P peak, S shoulder, L low.</small></div></div>';
