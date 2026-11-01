@@ -253,11 +253,33 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .hleg .kst{width:300px;max-width:100%;flex:none}
 .hsw{display:inline-flex;align-items:center;gap:5px}
 .hsw i{display:inline-block;width:20px;height:13px;border-radius:2px;font:800 10px/13px var(--f-disp);text-align:center;font-style:normal}
+
+.it.min{display:flex;align-items:center;gap:7px;padding:10px 12px}
+.it.min .dot{margin:0;flex:none}
+.it.min .nm{flex:1;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it.min .wc{margin:0}
+.it.min .sp{padding:0 5px;font-size:10px}
+.it.min .km{font-size:11px;color:var(--muted);flex:none}
+.mk{font-size:12px;color:var(--gold);flex:none}
+.mk.v{color:#2e9e5b}
+.mk.t{color:var(--b);font-weight:700;font-size:10px;text-transform:uppercase}
+.vo{justify-content:space-between}
+.vo label{display:flex;align-items:center;gap:8px;flex:1;cursor:pointer}
+.vo .btn{width:auto;padding:5px 12px;font-size:13px;flex:none}
+#wxall{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2500;background:var(--surface);color:var(--fg);display:flex;flex-direction:column}
+#wxall .fhead .btn{width:auto;padding:6px 14px}
+#allbody{flex:1;overflow:auto;min-height:0}
+.arow{padding:11px 14px;border-bottom:1px solid var(--line)}
+.arow .anm{cursor:pointer}
+.arow .anm b{font-size:15px}
+.arow .reg{font-size:12px;color:var(--muted);margin-top:1px}
+.arow .lk{font-size:14px;margin-top:6px}
+.arow .lk a{margin-right:18px}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.16</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.17</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -265,9 +287,10 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
     <div class="grid2"><select id="sts" aria-label="Show"></select><button type="button" id="nearbtn" class="btn">Near me</button></div></div>
     <div id="stats"></div><div id="msg" hidden></div>
   </div>
-  <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
+  <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.17</h4><ul><li>Simpler left list: just property names (with a small weather chip when the weather bar is on, and marks for favorites, visited and trip stops). Tap a name to open it on the map, where the links and the star, check, trip and weather buttons are.</li><li>The Weather tab is now a Weather summary button that opens the full screen heatmap directly.</li><li>New View all button: a full screen list of the properties in view with their Official site, TripAdvisor and Google Maps links.</li></ul>
     <h4>v1.16</h4><ul><li>Heatmap Overview: the season marker is now a larger badge (dark P, light blue S, white L) and the rain bar is thicker, outlined in white and gets thicker the wetter the month. Cells are taller.</li></ul>
     <h4>v1.15</h4><ul><li>The Weather tab and its full screen view now show a color key under the lens menu (temperature scale, season letters, rain bars) and a Key button that opens the full explanation.</li></ul>
     <h4>v1.14</h4><ul><li>New Key button in the weather bar: explains the temperature colors, season rings, rain drops, the overall score, pin shapes and heatmap lenses, with real samples.</li></ul>
@@ -286,7 +309,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
     <h4>v1.1</h4><ul><li>Map now shows a single world: no sideways repeating, and panning is limited to the edges.</li></ul>
     <h4>v1.0</h4><ul><li>First release: 140 open Four Seasons hotels and resorts on one map, with a searchable list and region filter. Each property links to its official Four Seasons page, TripAdvisor and Google Maps.</li></ul>
   </div>
-  <div id="list"><label class="vo"><input type="checkbox" id="viewonly"> Only list what is in the map view</label><div id="items"></div>
+  <div id="list"><div class="vo"><label><input type="checkbox" id="viewonly"> Only list what is in the map view</label><button type="button" class="btn" id="viewall">View all</button></div><div id="items"></div>
     <footer class="credit" aria-label="Credit"><div class="cr-rule"></div><div class="cr-mark">JS</div><div class="cr-by">Designed and built by</div><div class="cr-name">Jameson Spence</div><div class="cr-date">October 2026</div></footer>
   </div>
   <div id="trip" hidden></div>
@@ -303,6 +326,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
  <div id="wxnote"></div>
 </div></div></div>
 </div>
+<div id="wxall" hidden><div class="fhead"><b id="allt">Properties in view</b><button type="button" class="btn" id="allclose">Close</button></div><div id="allbody"></div></div>
 <div id="wxfull" hidden><div class="fhead"><b>Weather by month</b><button type="button" class="btn" id="fclose">Close</button></div><div id="fbody"></div></div>
 <div id="wxmodal" hidden role="dialog" aria-modal="true" aria-labelledby="wmt"><div class="wmbox"><div class="wmhead"><b id="wmt"></b><button type="button" class="btn" id="wmclose">Close</button></div><div id="wmbody"></div></div></div>
 <div id="wxkey" hidden role="dialog" aria-modal="true" aria-labelledby="keyt"><div class="wmbox"><div class="wmhead"><b id="keyt">How to read the weather view</b><button type="button" class="btn" id="keyclose">Close</button></div><div id="keybody"></div></div></div>
@@ -472,6 +496,16 @@ function wxStatus(){
   if(wxGoal!=='any')h+='<br>'+GOALTXT[wxGoal];
   el.innerHTML=h;
   var r=$('wxretry');if(r)r.onclick=function(){loadClimate()};
+}
+function wxChip(d){
+  var st=mstat(d),q0='<span class="wc" style="background:#8a94a3;color:#fff">?</span>';
+  if(wxView==='score'){
+    var s=curScore(d.n);
+    return (s==null?q0:'<span class="wc" style="background:'+scColor(s)+';color:'+scText(s)+'">'+s+'</span>')+(st?'<span class="sp sp-'+st.s+'">'+st.s+'</span>':'');
+  }
+  if(!st)return q0;
+  var tv=tval(st),c=tcColor(tv);
+  return '<span class="wc" style="background:'+c+';color:'+lumText(c)+'">'+tnum(tv)+'</span><span class="sp sp-'+st.s+'">'+st.s+'</span>'+(st.rc>0?'<span class="kd" style="margin:0 0 0 2px;width:9px;height:9px;background:'+RBAR[st.rc]+'"></span>':'');
 }
 function wxLine(d){
   if(wxView==='score')return wxLineScore(d);
@@ -672,7 +706,7 @@ function renderList(){
   var idx=filtered(true),h='';
   idx.forEach(function(i){
     var d=D[i];
-    h+='<div class="it" data-i="'+i+'"><div class="row"><div><b><span class="dot" style="background:'+cols[d.r]+'"></span>'+esc(d.n)+'</b><div class="reg">'+d.ty+' - '+esc(d.r)+(userPos?' - '+km(hav(userPos,[d.la,d.lo])):'')+'</div>'+(wxOn?wxLine(d):'')+'</div><div class="ibs">'+btns(i)+'</div></div>'+links(d)+'</div>';
+    h+='<div class="it min" data-i="'+i+'"><span class="dot" style="background:'+cols[d.r]+'"></span><span class="nm">'+esc(d.n)+'</span>'+(fav.has(d.n)?'<span class="mk" title="Favorite">&#9733;</span>':'')+(vis.has(d.n)?'<span class="mk v" title="Visited">&#10003;</span>':'')+(trip.indexOf(d.n)>=0?'<span class="mk t">trip</span>':'')+(userPos?'<span class="km">'+km(hav(userPos,[d.la,d.lo]))+'</span>':'')+(wxOn?wxChip(d):'')+'</div>';
   });
   $('items').innerHTML=h||'<p class="note" style="padding:12px">'+((wxOn&&wxMode==='off'&&climState.loading)?'Loading climate data...':(viewOnly?'No properties in this map view. Zoom out or turn off "Only list what is in the map view".':'No properties match.'))+'</p>';
   stats(idx.length);
@@ -878,7 +912,7 @@ function heatHtml(big){
   var h='<div class="hmc">Sort <select class="hsort"><option value="name"'+(heatSort==='name'?' selected':'')+'>Region order</option><option value="month"'+(heatSort==='month'?' selected':'')+'>Selected month</option><option value="best"'+(heatSort==='best'?' selected':'')+'>Best score</option></select>'
     +' Show <select class="hlens">'+[['overview','Overview'],['score','Score'],['temp','Temperature'],['rain','Rain'],['season','Season']].map(function(o){return '<option value="'+o[0]+'"'+(heatLens===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'
     +'<label><input type="checkbox" class="hview"'+(viewOnly?' checked':'')+'> Only what is in the map view</label>'
-    +'<button type="button" class="btn hkey">Key</button>'+(big?'':'<button type="button" class="btn hfull">Full screen</button>')
+    +'<button type="button" class="btn hkey">Key</button>'
     +'<span>'+rows.length+' of '+D.length+'</span></div>';
   h+='<div class="hmc">'+lensNote()+'</div>'+lensLegend();
   if(climState.loading)h+='<div class="hmc">Loading climate data '+(climState.done+climState.failed)+'/'+climState.total+'...</div>';
@@ -919,6 +953,27 @@ function heatClick(e){
 $('wxsum').addEventListener('click',heatClick);
 $('fbody').addEventListener('click',heatClick);
 
+
+
+/* ---- View all (full screen list with links) ---- */
+function allHtml(){
+  var idx=filtered(true);
+  var h='<div class="hmc">'+idx.length+' of '+D.length+' properties'+(viewOnly?' in the current map view':'')+'. Tap a name to show it on the map.</div>';
+  if(!idx.length)h+='<p class="note" style="padding:12px">No properties in this map view. Zoom out or untick "Only list what is in the map view".</p>';
+  idx.forEach(function(i){
+    var d=D[i];
+    h+='<div class="arow"><div class="anm" data-i="'+i+'"><span class="dot" style="background:'+cols[d.r]+'"></span><b>'+esc(d.n)+'</b><div class="reg">'+d.ty+' - '+esc(d.r)+'</div></div>'+links(d)+'</div>';
+  });
+  return h;
+}
+function openAll(){$('allbody').innerHTML=allHtml();$('allt').textContent='Properties in view ('+filtered(true).length+')';$('wxall').hidden=false;$('allbody').scrollTop=0}
+function closeAll(){$('wxall').hidden=true}
+$('viewall').onclick=openAll;
+$('allclose').onclick=closeAll;
+$('allbody').addEventListener('click',function(e){
+  var a=e.target.closest('.anm');
+  if(a){var i=+a.getAttribute('data-i');closeAll();openProp(i)}
+});
 
 /* ---- key / legend dialog ---- */
 function samp(cls,color,txt){return '<span class="ksamp"><div class="pin w '+cls+'" style="--c:'+color+'"><b style="color:'+lumText(color)+'">'+txt+'</b></div></span>'}
@@ -1007,7 +1062,7 @@ function openWxModal(i){
 function closeWxModal(){wmIdx=null;$('wxmodal').hidden=true}
 $('wmclose').onclick=closeWxModal;
 $('wxmodal').addEventListener('click',function(e){if(e.target===this)closeWxModal()});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('wxkey').hidden)closeKey();else if(!$('wxmodal').hidden)closeWxModal();else if(fullOpen)closeFull()}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('wxkey').hidden)closeKey();else if(!$('wxall').hidden)closeAll();else if(!$('wxmodal').hidden)closeWxModal();else if(fullOpen)closeFull()}});
 
 function wxRefresh(light){
   M.forEach(function(m,i){m.setIcon(iconFor(D[i]))});
@@ -1065,7 +1120,7 @@ function wxInit(){
   }
   gmin.onchange=gmax.onchange=grain.onchange=readCustom;
   Array.prototype.forEach.call(document.querySelectorAll('[data-gs]'),function(cb){cb.onchange=readCustom});
-  $('tabw').onclick=function(){showView('wx');loadClimate()};
+  $('tabw').onclick=function(){openFull()};
   map.on('popupopen',function(e){
     popOpen=true;
     var el=e.popup.getElement(),b=el&&el.querySelector('.wxb');
