@@ -144,7 +144,7 @@ input{margin-bottom:6px}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.6</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.7</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -155,6 +155,7 @@ input{margin-bottom:6px}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.7</h4><ul><li>Pins no longer group by default: they just overlap, and the one you hover or tap comes to the front. A Grouping toggle in the header (Menu on phones) brings the numbered clusters back.</li></ul>
     <h4>v1.6</h4><ul><li>Mobile layout: full-screen map with a pull-up list (drag the handle or tap it to cycle peek, half and full).</li><li>Filters tucked behind a Filters button, header links behind Menu, compact one-line stats, compact list rows, smaller pins and clusters.</li><li>The legend is now a collapsible Key button. Tapping a property in the list drops the sheet so you can see the pin and popup.</li></ul>
     <h4>v1.5</h4><ul><li>Fixed the map background: switched to OpenStreetMap tiles (the previous provider started requiring an API key). Dark mode now darkens the same map.</li></ul>
     <h4>v1.4</h4><ul><li>Nearby pins now merge into numbered clusters that split as you zoom.</li><li>Near me button: finds the closest properties and shows distances.</li><li>Favorites and Visited: tap the star or check on any property. Saved on your device, with a Show filter.</li><li>Dark mode (Auto, Light or Dark) and a cleaner basemap.</li><li>Type filter and pin shapes: City hotels (circle), Resorts (rounded square) and Retreats (diamond).</li><li>Stats strip showing counts by type, favorites and visited.</li><li>Share button: copies a link that remembers your filters (works on the live site).</li><li>Trip planner: add properties, reorder them, and see the route and distances on the map.</li></ul>
@@ -200,10 +201,23 @@ function applyTheme(){var t=effTheme();document.documentElement.setAttribute('da
 $('themebtn').onclick=function(){themePref=themePref==='auto'?'light':(themePref==='light'?'dark':'auto');ls('fs_theme',themePref);applyTheme()};
 applyTheme();
 
-var cl=(typeof L.markerClusterGroup==='function')?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:42,spiderfyOnMaxZoom:true,
+var clusterG=(typeof L.markerClusterGroup==='function')?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:42,spiderfyOnMaxZoom:true,
   iconCreateFunction:function(c){return L.divIcon({html:'<div class="mc"><span>'+c.getChildCount()+'</span></div>',className:'mcwrap',iconSize:[40,40]})}}):L.layerGroup();
+var plainG=L.layerGroup();
+var canGroup=typeof L.markerClusterGroup==='function';
+var grouping=ls('fs_group')===true&&canGroup;
+var cl=grouping?clusterG:plainG;
 cl.addTo(map);
 var routeLayer=L.layerGroup().addTo(map);
+function syncGroupBtn(){$('groupbtn').textContent='Grouping: '+(grouping?'On':'Off');$('groupbtn').disabled=!canGroup}
+$('groupbtn').onclick=function(){
+  if(!canGroup)return;
+  grouping=!grouping;ls('fs_group',grouping);
+  cl.clearLayers();map.removeLayer(cl);
+  cl=grouping?clusterG:plainG;cl.addTo(map);
+  syncGroupBtn();draw(false);
+};
+syncGroupBtn();
 
 function iconFor(d){
   var cls='pin t-'+d.ty.toLowerCase()+(fav.has(d.n)?' fav':'')+(vis.has(d.n)?' vis':'');
