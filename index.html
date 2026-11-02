@@ -303,11 +303,13 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .to{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--gold);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
 .tsum{margin:8px 0;font-size:13px;line-height:1.5}
 .it.min .km{white-space:nowrap;max-width:60%;overflow:hidden;text-overflow:ellipsis}
+.tr{cursor:pointer}
+.tr:hover{background:var(--track)}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.21</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.22</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -318,6 +320,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.22</h4><ul><li>Trip tab: tap a stop to open its popup on the map (with the links and buttons), the same as in the Properties list. The numbered badges on the map open it too.</li></ul>
     <h4>v1.21</h4><ul><li>Travel times next to distances. Over 800 km: an estimated nonstop flight time (about 830 km/h plus 45 minutes). Under 300 km: drive time. From 300 to 800 km: both. Drive times come from a free public routing service, and a place with no road route (for example across water) shows only the flight estimate.</li><li>Shown in the Trip tab (both modes), the Near me list and Copy list. Flight times are estimates for a nonstop flight; many routes need connections.</li></ul>
     <h4>v1.20</h4><ul><li>Trip tab: new Add Four Seasons stops search box. Type a property, region or type (for example Bali, Asia, Resort) and tap a result to add it. Add all in view adds up to 30 properties at once.</li></ul>
     <h4>v1.19</h4><ul><li>The list sheet on phones now opens at about 50 percent of the screen.</li><li>Trip: pick any starting place (a city, one of the Four Seasons properties, or your location) and measure from it.</li><li>Trip has two modes: Stop to stop (a chain, optionally starting from your starting place) and From one place (each stop measured directly from the same place, drawn as spokes, with nearest and farthest).</li><li>Distances can be shown in km or miles.</li></ul>
@@ -781,6 +784,7 @@ function afterChange(i){
 function openProp(i){
   var m=M[i];
   if(isMob())setSheet('peek');
+  if(cl.hasLayer&&!cl.hasLayer(m))cl.addLayer(m);
   function go(){m.openPopup()}
   if(cl.zoomToShowLayer&&cl.hasLayer(m)){cl.zoomToShowLayer(m,go)}
   else{map.setView([D[i].la,D[i].lo],8);setTimeout(go,300)}
@@ -801,7 +805,7 @@ document.addEventListener('click',function(e){
     }
     e.stopPropagation();return;
   }
-  var it=e.target.closest&&e.target.closest('.it');
+  var it=e.target.closest&&e.target.closest('.it,.tr');
   if(it&&!(e.target.closest('a'))){openProp(+it.getAttribute('data-i'))}
 });
 
@@ -890,7 +894,7 @@ function tripChanged(fit){
   var lineOpt={color:'#e0b04a',weight:hub?2.5:3,opacity:.95,dashArray:'7 6'};
   if(hub){if(op)sp.forEach(function(p){L.polyline(arc(op,p),lineOpt).addTo(routeLayer)})}
   else{var cp=(useO?[op]:[]).concat(sp);for(i=1;i<cp.length;i++)L.polyline(arc(cp[i-1],cp[i]),lineOpt).addTo(routeLayer)}
-  sp.forEach(function(p,k){L.marker(p,{icon:L.divIcon({className:'pinwrap',html:'<div class="tn">'+(k+1)+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000,interactive:false}).addTo(routeLayer)});
+  sp.forEach(function(p,k){L.marker(p,{icon:L.divIcon({className:'pinwrap',html:'<div class="tn">'+(k+1)+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000,interactive:true}).on('click',function(){openProp(NI[trip[k]])}).addTo(routeLayer)});
   if(op&&useO){
     L.marker(op,{icon:L.divIcon({className:'pinwrap',html:'<div class="to"></div>',iconSize:[26,26],iconAnchor:[13,13]}),zIndexOffset:1100}).bindTooltip(origin.n,{direction:'top',offset:[0,-12]}).addTo(routeLayer);
     fitPts.push(op);
@@ -904,7 +908,7 @@ function tripChanged(fit){
     if(!op)h+='<p class="note">Set a starting place above to see distances.</p>';
     h+=items.map(function(it,p){
       lines.push((op?origin.n+' to ':'')+'Four Seasons '+it.n+(it.dist!=null?': '+km(it.dist)+' ('+travelText(op,it.pt,it.dist)+')':''));
-      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(it.n)+'</b><small>'+(it.dist!=null?km(it.dist)+' from '+esc(origin.n)+'<br>'+travelText(op,it.pt,it.dist):'')+'</small></div><div class="ibs">'+rm(p)+'</div></div>';
+      return '<div class="tr" data-i="'+NI[it.n]+'"><div class="n">'+(p+1)+'</div><div><b>'+esc(it.n)+'</b><small>'+(it.dist!=null?km(it.dist)+' from '+esc(origin.n)+'<br>'+travelText(op,it.pt,it.dist):'')+'</small></div><div class="ibs">'+rm(p)+'</div></div>';
     }).join('');
     if(op){
       var ds=items.slice().sort(function(a,b2){return a.dist-b2.dist}),nr=ds[0],fr=ds[ds.length-1];
@@ -917,7 +921,7 @@ function tripChanged(fit){
       var k=useO?p+1:p,leg=k>0?hav(pts[k-1],pts[k]):0;tot+=leg;
       var sub=k>0?(km(leg)+' from '+(p===0&&useO?esc(origin.n):'previous')+'<br>'+travelText(pts[k-1],pts[k],leg)):'Start';
       lines.push((p+1)+'. Four Seasons '+n+(k>0?' - '+km(leg)+' ('+travelText(pts[k-1],pts[k],leg)+')':' (start)'));
-      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(n)+'</b><small>'+sub+'</small></div><div class="ibs"><button type="button" class="ib" data-act="up" data-p="'+p+'" aria-label="Move up">&#8593;</button><button type="button" class="ib" data-act="down" data-p="'+p+'" aria-label="Move down">&#8595;</button>'+rm(p)+'</div></div>';
+      return '<div class="tr" data-i="'+NI[n]+'"><div class="n">'+(p+1)+'</div><div><b>'+esc(n)+'</b><small>'+sub+'</small></div><div class="ibs"><button type="button" class="ib" data-act="up" data-p="'+p+'" aria-label="Move up">&#8593;</button><button type="button" class="ib" data-act="down" data-p="'+p+'" aria-label="Move down">&#8595;</button>'+rm(p)+'</div></div>';
     }).join('');
     if(useO)lines.unshift('Start: '+origin.n);
     h+='<div class="total">Total: '+km(tot)+' (straight-line)</div><div class="grid2"><button type="button" class="btn" id="tcopy">Copy list</button><button type="button" class="btn" id="tclear">Clear stops</button></div>';
