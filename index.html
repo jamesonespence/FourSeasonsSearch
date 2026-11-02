@@ -288,11 +288,25 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .hs.P{background:#0e1a2c;color:#fff}.hs.S{background:#cfdcf7;color:#14213d}.hs.L{background:#fff;color:#555}
 .hc.sel{outline:2px solid var(--fg);outline-offset:-2px}
 .hc .hdot{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+
+#trip .wrow{margin:6px 0;flex-wrap:wrap}
+.torg{border:1px solid var(--line);border-radius:10px;padding:8px;margin:8px 0}
+.torg .srch{margin:6px 0 0}
+.torg .srch input{margin:0}
+.torg .srch .btn{width:auto;flex:none;padding:8px 10px;font-size:13px}
+#tolab{font-size:13px;line-height:1.4}
+#tores{margin-top:4px}
+#tores .rs{display:flex;justify-content:space-between;gap:8px;width:100%;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;font-size:14px;color:var(--fg);cursor:pointer}
+#tores .rs small{color:var(--muted);font-size:11px;flex:none}
+#tstartlab{display:flex;gap:6px;align-items:center;font-size:13px;margin-top:8px;cursor:pointer}
+#tstartlab input{width:auto;margin:0;padding:0}
+.to{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--gold);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.tsum{margin:8px 0;font-size:13px;line-height:1.5}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.18</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.19</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -303,6 +317,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.19</h4><ul><li>The list sheet on phones now opens at about 50 percent of the screen.</li><li>Trip: pick any starting place (a city, one of the Four Seasons properties, or your location) and measure from it.</li><li>Trip has two modes: Stop to stop (a chain, optionally starting from your starting place) and From one place (each stop measured directly from the same place, drawn as spokes, with nearest and farthest).</li><li>Distances can be shown in km or miles.</li></ul>
     <h4>v1.18</h4><ul><li>Phone layout: the list sheet now opens at about 40 percent of the screen (drag the handle or tap it for smaller or full height).</li><li>Weather summary on phones: each property is a card with all 12 months in two rows of six, so nothing scrolls sideways. Each cell shows the month, temperature, season badge and rain bar.</li></ul>
     <h4>v1.17</h4><ul><li>Simpler left list: just property names (with a small weather chip when the weather bar is on, and marks for favorites, visited and trip stops). Tap a name to open it on the map, where the links and the star, check, trip and weather buttons are.</li><li>The Weather tab is now a Weather summary button that opens the full screen heatmap directly.</li><li>New View all button: a full screen list of the properties in view with their Official site, TripAdvisor and Google Maps links.</li></ul>
     <h4>v1.16</h4><ul><li>Heatmap Overview: the season marker is now a larger badge (dark P, light blue S, white L) and the rain bar is thicker, outlined in white and gets thicker the wetter the month. Cells are taller.</li></ul>
@@ -326,7 +341,17 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div id="list"><div class="vo"><label><input type="checkbox" id="viewonly"> Only list what is in the map view</label><button type="button" class="btn" id="viewall">View all</button></div><div id="items"></div>
     <footer class="credit" aria-label="Credit"><div class="cr-rule"></div><div class="cr-mark">JS</div><div class="cr-by">Designed and built by</div><div class="cr-name">Jameson Spence</div><div class="cr-date">October 2026</div></footer>
   </div>
-  <div id="trip" hidden></div>
+  <div id="trip" hidden>
+    <h3>Trip</h3>
+    <div class="wrow"><button type="button" class="chip on" data-tm="chain">Stop to stop</button><button type="button" class="chip" data-tm="hub">From one place</button><button type="button" class="chip" id="duBtn">Distance: km</button></div>
+    <div class="torg">
+      <div id="tolab"></div>
+      <div class="srch"><input id="tosearch" placeholder="Search a city or a Four Seasons property" autocomplete="off" aria-label="Starting place"><button type="button" class="btn" id="toloc">My location</button></div>
+      <div id="tores"></div>
+      <label id="tstartlab" hidden><input type="checkbox" id="tstart"> Start the chain from this place</label>
+    </div>
+    <div id="tlist"></div>
+  </div>
   <div id="wxsum" hidden></div>
 </div>
 <div id="mapwrap"><div id="map"></div>
@@ -408,6 +433,9 @@ var RCOL=['#dbe9f6','#9cc4ea','#4f94d4','#1f5fa8'],RTXT=['#1a1a1a','#1a1a1a','#f
 var SCOL={P:'#2d3a5a',S:'#9db4e0',L:'#e8edf5'},STXT={P:'#fff',S:'#14213d',L:'#14213d'};
 var TST=[[-10,'#27408b'],[5,'#3c7dc4'],[15,'#59b0c9'],[22,'#5cb85c'],[27,'#f0c93b'],[32,'#e8872b'],[38,'#c0392b']];
 var GOALTXT={any:'',beach:'Beach: high 27C or more, dry or only some showers (sea temperature is not included).',sights:'Sightseeing: high 18 to 27C, dry or only some showers.',quiet:'Quiet and pleasant: high 20 to 28C, dry or some showers, shoulder or low season.',ski:'Ski: ski resorts with a high of 4C or less.',custom:'Custom range (see the controls below).'};
+var CITIES=[["Toronto", "Canada", 43.65, -79.38], ["Markham", "Canada", 43.86, -79.34], ["Montreal", "Canada", 45.5, -73.57], ["Vancouver", "Canada", 49.28, -123.12], ["Calgary", "Canada", 51.05, -114.07], ["Ottawa", "Canada", 45.42, -75.7], ["New York", "USA", 40.71, -74.01], ["Los Angeles", "USA", 34.05, -118.24], ["San Francisco", "USA", 37.77, -122.42], ["Chicago", "USA", 41.88, -87.63], ["Miami", "USA", 25.76, -80.19], ["Boston", "USA", 42.36, -71.06], ["Washington DC", "USA", 38.91, -77.04], ["Dallas", "USA", 32.78, -96.8], ["Houston", "USA", 29.76, -95.37], ["Seattle", "USA", 47.61, -122.33], ["Denver", "USA", 39.74, -104.99], ["Honolulu", "USA", 21.31, -157.86], ["Mexico City", "Mexico", 19.43, -99.13], ["Sao Paulo", "Brazil", -23.55, -46.63], ["Buenos Aires", "Argentina", -34.6, -58.38], ["Bogota", "Colombia", 4.71, -74.07], ["Lima", "Peru", -12.05, -77.04], ["London", "UK", 51.51, -0.13], ["Paris", "France", 48.86, 2.35], ["Madrid", "Spain", 40.42, -3.7], ["Rome", "Italy", 41.9, 12.5], ["Milan", "Italy", 45.46, 9.19], ["Berlin", "Germany", 52.52, 13.4], ["Amsterdam", "Netherlands", 52.37, 4.9], ["Zurich", "Switzerland", 47.38, 8.54], ["Vienna", "Austria", 48.21, 16.37], ["Athens", "Greece", 37.98, 23.73], ["Istanbul", "Turkey", 41.01, 28.98], ["Moscow", "Russia", 55.76, 37.62], ["Dublin", "Ireland", 53.35, -6.26], ["Lisbon", "Portugal", 38.72, -9.14], ["Copenhagen", "Denmark", 55.68, 12.57], ["Stockholm", "Sweden", 59.33, 18.07], ["Cairo", "Egypt", 30.04, 31.24], ["Johannesburg", "South Africa", -26.2, 28.05], ["Cape Town", "South Africa", -33.92, 18.42], ["Nairobi", "Kenya", -1.29, 36.82], ["Lagos", "Nigeria", 6.52, 3.38], ["Casablanca", "Morocco", 33.57, -7.59], ["Dubai", "UAE", 25.2, 55.27], ["Abu Dhabi", "UAE", 24.47, 54.37], ["Doha", "Qatar", 25.29, 51.53], ["Riyadh", "Saudi Arabia", 24.71, 46.68], ["Tel Aviv", "Israel", 32.08, 34.78], ["Delhi", "India", 28.61, 77.21], ["Mumbai", "India", 19.08, 72.88], ["Bengaluru", "India", 12.97, 77.59], ["Chennai", "India", 13.08, 80.27], ["Kolkata", "India", 22.57, 88.36], ["Hyderabad", "India", 17.39, 78.49], ["Colombo", "Sri Lanka", 6.93, 79.86], ["Karachi", "Pakistan", 24.86, 67.01], ["Dhaka", "Bangladesh", 23.81, 90.41], ["Kathmandu", "Nepal", 27.72, 85.32], ["Bangkok", "Thailand", 13.76, 100.5], ["Singapore", "Singapore", 1.35, 103.82], ["Kuala Lumpur", "Malaysia", 3.14, 101.69], ["Jakarta", "Indonesia", -6.21, 106.85], ["Manila", "Philippines", 14.6, 120.98], ["Ho Chi Minh City", "Vietnam", 10.82, 106.63], ["Hanoi", "Vietnam", 21.03, 105.85], ["Hong Kong", "China", 22.32, 114.17], ["Shanghai", "China", 31.23, 121.47], ["Beijing", "China", 39.9, 116.41], ["Seoul", "South Korea", 37.57, 126.98], ["Tokyo", "Japan", 35.68, 139.69], ["Osaka", "Japan", 34.69, 135.5], ["Taipei", "Taiwan", 25.03, 121.57], ["Sydney", "Australia", -33.87, 151.21], ["Melbourne", "Australia", -37.81, 144.96], ["Auckland", "New Zealand", -36.85, 174.76]];
+var distUnit=ls('fs_du')||'km',tripMode=ls('fs_tmode')||'chain',tStart=ls('fs_tstart')!==false,origin=ls('fs_origin');
+if(!(origin&&typeof origin.la==='number'&&typeof origin.lo==='number'&&origin.n))origin=null;
 function seasonOf(d,m){return d.sn?d.sn.charAt(m):'S'}
 function rainClass(r){return r==null?null:(r<0.8?0:(r<2.5?1:(r<5?2:3)))}
 function tcColor(t){if(t<=TST[0][0])return TST[0][1];for(var i=1;i<TST.length;i++){if(t<=TST[i][0]){var a=TST[i-1],b2=TST[i];return mixHex(a[1],b2[1],(t-a[0])/(b2[0]-a[0]))}}return TST[TST.length-1][1]}
@@ -634,7 +662,7 @@ function iconFor(d){
   return L.divIcon({className:'pinwrap',html:'<div class="'+cls+'" style="--c:'+c+'">'+inner+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14]});
 }
 function hav(a,b){var r=Math.PI/180,x=(b[0]-a[0])*r,y=(b[1]-a[1])*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(y/2)*Math.sin(y/2);return 12742*Math.asin(Math.sqrt(h))}
-function km(x){return Math.round(x).toLocaleString()+' km'}
+function km(x){return distUnit==='mi'?Math.round(x*0.621371).toLocaleString()+' mi':Math.round(x).toLocaleString()+' km'}
 function links(d){return '<div class="lk"><a href="'+d.o+'" target="_blank" rel="noopener">Official site</a><a class="ta" data-n="'+esc(d.n)+'" href="'+d.t+'" target="_blank" rel="noopener">TripAdvisor</a><a href="'+d.g+'" target="_blank" rel="noopener">Google Maps</a></div>'}
 function btns(i){
   var d=D[i];
@@ -654,7 +682,7 @@ var M=D.map(function(d,i){
   return m;
 });
 
-function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.40),full:h-56}}
+function stops(){var h=window.innerHeight;return {peek:150,half:Math.round(h*.50),full:h-56}}
 function setSheet(s){
   if(!isMob()){side.style.height='';sheetH=0;sheetState=s;return}
   sheetState=s;sheetH=stops()[s];side.style.height=sheetH+'px';
@@ -800,26 +828,118 @@ function arc(a,b){
 function tripChanged(fit){
   $('tabt').textContent='Trip ('+trip.length+')';
   routeLayer.clearLayers();
-  var pts=trip.map(function(n){return [D[NI[n]].la,D[NI[n]].lo]});
-  for(var i=1;i<pts.length;i++)L.polyline(arc(pts[i-1],pts[i]),{color:'#e0b04a',weight:3,opacity:.95,dashArray:'7 6'}).addTo(routeLayer);
-  pts.forEach(function(p,i){L.marker(p,{icon:L.divIcon({className:'pinwrap',html:'<div class="tn">'+(i+1)+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000,interactive:false}).addTo(routeLayer)});
-  var h='<h3>Trip</h3>';
-  if(!trip.length)h+='<p class="note">Tap "+ Trip" on any property to build a route. Reorder the stops here and see the distances.</p>';
-  else{
-    var tot=0;
-    h+=trip.map(function(n,p){
-      var d=D[NI[n]],leg=p?hav(pts[p-1],pts[p]):0;tot+=leg;
-      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(n)+'</b><small>'+(p?km(leg)+' from previous':'Start')+'</small></div><div class="ibs"><button type="button" class="ib" data-act="up" data-p="'+p+'" aria-label="Move up">&#8593;</button><button type="button" class="ib" data-act="down" data-p="'+p+'" aria-label="Move down">&#8595;</button><button type="button" class="ib" data-act="rm" data-p="'+p+'" aria-label="Remove">&#10005;</button></div></div>';
-    }).join('');
-    h+='<div class="total">Total: '+km(tot)+' (straight-line)</div><div class="grid2"><button type="button" class="btn" id="tcopy">Copy list</button><button type="button" class="btn" id="tclear">Clear trip</button></div>';
+  var hub=tripMode==='hub',op=origin?[origin.la,origin.lo]:null,useO=!!op&&(hub||tStart);
+  var sp=trip.map(function(n){return [D[NI[n]].la,D[NI[n]].lo]}),fitPts=sp.slice(),i;
+  var lineOpt={color:'#e0b04a',weight:hub?2.5:3,opacity:.95,dashArray:'7 6'};
+  if(hub){if(op)sp.forEach(function(p){L.polyline(arc(op,p),lineOpt).addTo(routeLayer)})}
+  else{var cp=(useO?[op]:[]).concat(sp);for(i=1;i<cp.length;i++)L.polyline(arc(cp[i-1],cp[i]),lineOpt).addTo(routeLayer)}
+  sp.forEach(function(p,k){L.marker(p,{icon:L.divIcon({className:'pinwrap',html:'<div class="tn">'+(k+1)+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000,interactive:false}).addTo(routeLayer)});
+  if(op&&useO){
+    L.marker(op,{icon:L.divIcon({className:'pinwrap',html:'<div class="to"></div>',iconSize:[26,26],iconAnchor:[13,13]}),zIndexOffset:1100}).bindTooltip(origin.n,{direction:'top',offset:[0,-12]}).addTo(routeLayer);
+    fitPts.push(op);
   }
-  $('trip').innerHTML=h;
+  var h='',rm=function(p){return '<button type="button" class="ib" data-act="rm" data-p="'+p+'" aria-label="Remove">&#10005;</button>'};
+  var lines=[];
+  if(!trip.length){
+    h='<p class="note">Tap "+ Trip" on a property to add stops. "Stop to stop" chains the stops in order. "From one place" measures every stop directly from the starting place above.</p>';
+  }else if(hub){
+    var items=trip.map(function(n){var d=D[NI[n]];return {n:n,dist:op?hav(op,[d.la,d.lo]):null}});
+    if(!op)h+='<p class="note">Set a starting place above to see distances.</p>';
+    h+=items.map(function(it,p){
+      lines.push((op?origin.n+' to ':'')+'Four Seasons '+it.n+(it.dist!=null?': '+km(it.dist):''));
+      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(it.n)+'</b><small>'+(it.dist!=null?km(it.dist)+' from '+esc(origin.n):'')+'</small></div><div class="ibs">'+rm(p)+'</div></div>';
+    }).join('');
+    if(op){
+      var ds=items.slice().sort(function(a,b2){return a.dist-b2.dist}),nr=ds[0],fr=ds[ds.length-1];
+      h+='<div class="tsum">Nearest: <b>'+esc(nr.n)+'</b> ('+km(nr.dist)+')'+(ds.length>1?'<br>Farthest: <b>'+esc(fr.n)+'</b> ('+km(fr.dist)+')':'')+'</div>';
+    }
+    h+='<div class="grid2"><button type="button" class="btn" id="tsort"'+(op?'':' disabled')+'>Sort by distance</button><button type="button" class="btn" id="tcopy">Copy list</button></div><div class="grid2"><button type="button" class="btn" id="tclear">Clear stops</button></div>';
+  }else{
+    var tot=0,prevOrigin=useO,pts=(useO?[op]:[]).concat(sp);
+    h+=trip.map(function(n,p){
+      var k=useO?p+1:p,leg=k>0?hav(pts[k-1],pts[k]):0;tot+=leg;
+      var sub=k>0?(km(leg)+' from '+(p===0&&useO?esc(origin.n):'previous')):'Start';
+      lines.push((p+1)+'. Four Seasons '+n+(k>0?' - '+km(leg):' (start)'));
+      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(n)+'</b><small>'+sub+'</small></div><div class="ibs"><button type="button" class="ib" data-act="up" data-p="'+p+'" aria-label="Move up">&#8593;</button><button type="button" class="ib" data-act="down" data-p="'+p+'" aria-label="Move down">&#8595;</button>'+rm(p)+'</div></div>';
+    }).join('');
+    if(useO)lines.unshift('Start: '+origin.n);
+    h+='<div class="total">Total: '+km(tot)+' (straight-line)</div><div class="grid2"><button type="button" class="btn" id="tcopy">Copy list</button><button type="button" class="btn" id="tclear">Clear stops</button></div>';
+  }
+  $('tlist').innerHTML=h;
   if($('tcopy'))$('tcopy').onclick=function(){
-    var t=trip.map(function(n,i){return (i+1)+'. Four Seasons '+n}).join('\n');
+    var t=lines.join('\n');
     try{navigator.clipboard.writeText(t).then(function(){note('Trip copied.')},function(){note('Copy not allowed here.')})}catch(e){note('Copy not allowed here.')}
   };
   if($('tclear'))$('tclear').onclick=function(){trip=[];ls('fs_trip',trip);tripChanged(false);M.forEach(function(m,j){m.setIcon(iconFor(D[j]))});renderList()};
-  if(fit&&pts.length>1)window.fit(pts,6);
+  if($('tsort'))$('tsort').onclick=function(){
+    if(!origin)return;
+    trip.sort(function(a,b2){var x=D[NI[a]],y=D[NI[b2]];return hav([origin.la,origin.lo],[x.la,x.lo])-hav([origin.la,origin.lo],[y.la,y.lo])});
+    ls('fs_trip',trip);tripChanged(false);
+  };
+  if(fit&&fitPts.length>1)window.fit(fitPts,6);
+}
+
+/* trip: starting place, modes, units */
+function tripUi(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tm]'),function(b2){b2.classList.toggle('on',b2.getAttribute('data-tm')===tripMode)});
+  $('duBtn').textContent='Distance: '+distUnit;
+  $('tolab').innerHTML=origin?('Measuring from <b>'+esc(origin.n)+'</b> <button type="button" class="linkbtn" id="tocl">Clear</button>'):'No starting place set. Search a city or a Four Seasons property, or use your location.';
+  $('tstartlab').hidden=tripMode!=='chain'||!origin;
+  $('tstart').checked=tStart;
+  var c=$('tocl');if(c)c.onclick=function(){origin=null;ls('fs_origin',origin);tripUi();tripChanged(false)};
+}
+var oRes=[],toTimer=null,toSeq=0;
+function localOrigins(q){
+  var ql=q.toLowerCase(),res=[];
+  CITIES.forEach(function(c){if((c[0]+' '+c[1]).toLowerCase().indexOf(ql)>=0)res.push({n:c[0]+', '+c[1],la:c[2],lo:c[3],t:'City'})});
+  D.forEach(function(d){if(('four seasons '+d.n).toLowerCase().indexOf(ql)>=0)res.push({n:'Four Seasons '+d.n,la:d.la,lo:d.lo,t:'Four Seasons'})});
+  return res;
+}
+function showOrigins(list){
+  oRes=list.slice(0,8);
+  $('tores').innerHTML=oRes.map(function(r,k){return '<button type="button" class="rs" data-k="'+k+'"><span>'+esc(r.n)+'</span><small>'+r.t+'</small></button>'}).join('');
+}
+function setOrigin(o){
+  origin={n:o.n,la:o.la,lo:o.lo};ls('fs_origin',origin);
+  $('tosearch').value='';$('tores').innerHTML='';oRes=[];
+  tripUi();tripChanged(true);
+}
+function tripInit(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tm]'),function(b2){
+    b2.onclick=function(){tripMode=b2.getAttribute('data-tm');ls('fs_tmode',tripMode);tripUi();tripChanged(true)};
+  });
+  $('duBtn').onclick=function(){distUnit=distUnit==='km'?'mi':'km';ls('fs_du',distUnit);tripUi();tripChanged(false);renderList()};
+  $('tstart').onchange=function(){tStart=this.checked;ls('fs_tstart',tStart);tripChanged(true)};
+  $('tosearch').oninput=function(){
+    var q=this.value.trim();
+    if(q.length<2){$('tores').innerHTML='';oRes=[];return}
+    var local=localOrigins(q);showOrigins(local);
+    clearTimeout(toTimer);
+    if(q.length>=3){
+      var seq=++toSeq;
+      toTimer=setTimeout(function(){
+        fetchT('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=en&format=json',8000).then(function(j){
+          if(seq!==toSeq||!j||!j.results)return;
+          var seen={};local.forEach(function(r){seen[r.n.toLowerCase()]=1});
+          var extra=[];
+          j.results.forEach(function(r){
+            var nm=r.name+(r.admin1&&r.admin1!==r.name?', '+r.admin1:'')+(r.country?', '+r.country:'');
+            if(!seen[nm.toLowerCase()]&&typeof r.latitude==='number')extra.push({n:nm,la:r.latitude,lo:r.longitude,t:'City'});
+          });
+          showOrigins(local.concat(extra));
+        }).catch(function(){});
+      },350);
+    }
+  };
+  $('tores').addEventListener('click',function(e){
+    var bt=e.target.closest('.rs');if(!bt)return;
+    var o=oRes[+bt.getAttribute('data-k')];if(o)setOrigin(o);
+  });
+  $('toloc').onclick=function(){
+    var fail=function(){note('Location is not available here. Allow location access, or search for a city.')};
+    try{navigator.geolocation.getCurrentPosition(function(p){setOrigin({n:'My location',la:p.coords.latitude,lo:p.coords.longitude})},fail,{timeout:10000})}catch(e){fail()}
+  };
+  tripUi();
 }
 
 /* near me */
@@ -1171,4 +1291,5 @@ readHash();
 draw(true);
 tripChanged(false);
 wxInit();
+tripInit();
 </script></body></html>
