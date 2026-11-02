@@ -296,8 +296,8 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 .torg .srch .btn{width:auto;flex:none;padding:8px 10px;font-size:13px}
 #tolab{font-size:13px;line-height:1.4}
 #tores{margin-top:4px}
-#tores .rs{display:flex;justify-content:space-between;gap:8px;width:100%;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;font-size:14px;color:var(--fg);cursor:pointer}
-#tores .rs small{color:var(--muted);font-size:11px;flex:none}
+#tores .rs,#tadres .rs{display:flex;justify-content:space-between;gap:8px;width:100%;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;font-size:14px;color:var(--fg);cursor:pointer}
+#tores .rs small,#tadres .rs small{color:var(--muted);font-size:11px;flex:none}
 #tstartlab{display:flex;gap:6px;align-items:center;font-size:13px;margin-top:8px;cursor:pointer}
 #tstartlab input{width:auto;margin:0;padding:0}
 .to{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--gold);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
@@ -306,7 +306,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.19</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.20</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -317,6 +317,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.20</h4><ul><li>Trip tab: new Add Four Seasons stops search box. Type a property, region or type (for example Bali, Asia, Resort) and tap a result to add it. Add all in view adds up to 30 properties at once.</li></ul>
     <h4>v1.19</h4><ul><li>The list sheet on phones now opens at about 50 percent of the screen.</li><li>Trip: pick any starting place (a city, one of the Four Seasons properties, or your location) and measure from it.</li><li>Trip has two modes: Stop to stop (a chain, optionally starting from your starting place) and From one place (each stop measured directly from the same place, drawn as spokes, with nearest and farthest).</li><li>Distances can be shown in km or miles.</li></ul>
     <h4>v1.18</h4><ul><li>Phone layout: the list sheet now opens at about 40 percent of the screen (drag the handle or tap it for smaller or full height).</li><li>Weather summary on phones: each property is a card with all 12 months in two rows of six, so nothing scrolls sideways. Each cell shows the month, temperature, season badge and rain bar.</li></ul>
     <h4>v1.17</h4><ul><li>Simpler left list: just property names (with a small weather chip when the weather bar is on, and marks for favorites, visited and trip stops). Tap a name to open it on the map, where the links and the star, check, trip and weather buttons are.</li><li>The Weather tab is now a Weather summary button that opens the full screen heatmap directly.</li><li>New View all button: a full screen list of the properties in view with their Official site, TripAdvisor and Google Maps links.</li></ul>
@@ -349,6 +350,11 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
       <div class="srch"><input id="tosearch" placeholder="Search a city or a Four Seasons property" autocomplete="off" aria-label="Starting place"><button type="button" class="btn" id="toloc">My location</button></div>
       <div id="tores"></div>
       <label id="tstartlab" hidden><input type="checkbox" id="tstart"> Start the chain from this place</label>
+    </div>
+    <div class="torg">
+      <div id="taddlab" style="font-size:13px"><b>Add Four Seasons stops</b></div>
+      <div class="srch"><input id="taddsearch" placeholder="Search a property to add" autocomplete="off" aria-label="Add a stop"><button type="button" class="btn" id="taddall">Add all in view</button></div>
+      <div id="tadres"></div>
     </div>
     <div id="tlist"></div>
   </div>
@@ -841,7 +847,7 @@ function tripChanged(fit){
   var h='',rm=function(p){return '<button type="button" class="ib" data-act="rm" data-p="'+p+'" aria-label="Remove">&#10005;</button>'};
   var lines=[];
   if(!trip.length){
-    h='<p class="note">Tap "+ Trip" on a property to add stops. "Stop to stop" chains the stops in order. "From one place" measures every stop directly from the starting place above.</p>';
+    h='<p class="note">Add stops with the search box above, or tap "+ Trip" on a property. "Stop to stop" chains the stops in order. "From one place" measures every stop directly from the starting place above.</p>';
   }else if(hub){
     var items=trip.map(function(n){var d=D[NI[n]];return {n:n,dist:op?hav(op,[d.la,d.lo]):null}});
     if(!op)h+='<p class="note">Set a starting place above to see distances.</p>';
@@ -877,6 +883,37 @@ function tripChanged(fit){
     ls('fs_trip',trip);tripChanged(false);
   };
   if(fit&&fitPts.length>1)window.fit(fitPts,6);
+}
+
+
+/* trip: add stops from the Trip tab */
+var aRes=[];
+function showAddResults(q){
+  var ql=q.toLowerCase(),res=[];
+  D.forEach(function(d,i){if(trip.indexOf(d.n)<0&&(d.n.toLowerCase().indexOf(ql)>=0||d.r.toLowerCase().indexOf(ql)>=0||d.ty.toLowerCase()===ql))res.push(i)});
+  aRes=res.slice(0,8);
+  $('tadres').innerHTML=aRes.map(function(i,k){return '<button type="button" class="rs" data-k="'+k+'"><span>'+esc(D[i].n)+'</span><small>+ Add</small></button>'}).join('')||(q?'<div class="note" style="padding:6px">No match, or already in your trip.</div>':'');
+}
+function addStop(i){
+  var n=D[i].n;if(trip.indexOf(n)>=0)return;
+  trip.push(n);ls('fs_trip',trip);
+  M[i].setIcon(iconFor(D[i]));
+}
+function tripAddInit(){
+  $('taddsearch').oninput=function(){var q=this.value.trim();if(q.length<1){$('tadres').innerHTML='';aRes=[];return}showAddResults(q)};
+  $('tadres').addEventListener('click',function(e){
+    var bt=e.target.closest('.rs');if(!bt)return;
+    var i=aRes[+bt.getAttribute('data-k')];if(i==null)return;
+    addStop(i);tripChanged(false);renderList();
+    showAddResults($('taddsearch').value.trim());
+    note('Added '+D[i].n+' ('+trip.length+' stops).');
+  });
+  $('taddall').onclick=function(){
+    var idx=filtered(true).filter(function(i){return trip.indexOf(D[i].n)<0}).slice(0,30);
+    if(!idx.length){note('Nothing new to add in this view.');return}
+    idx.forEach(addStop);tripChanged(true);renderList();
+    note('Added '+idx.length+' properties from the current view (max 30 at a time).');
+  };
 }
 
 /* trip: starting place, modes, units */
@@ -1292,4 +1329,5 @@ draw(true);
 tripChanged(false);
 wxInit();
 tripInit();
+tripAddInit();
 </script></body></html>
