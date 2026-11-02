@@ -302,11 +302,12 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
 #tstartlab input{width:auto;margin:0;padding:0}
 .to{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--gold);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
 .tsum{margin:8px 0;font-size:13px;line-height:1.5}
+.it.min .km{white-space:nowrap;max-width:60%;overflow:hidden;text-overflow:ellipsis}
 </style></head><body>
 <div id="app">
 <div id="side">
   <div id="grab" role="button" aria-label="Drag to resize the list"><i></i></div>
-  <div class="verbar"><span>Four Seasons Map v1.20</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
+  <div class="verbar"><span>Four Seasons Map v1.21</span><button type="button" id="menubtn" class="linkbtn">Menu</button><span class="vbtns"><button type="button" id="lblbtn" class="linkbtn">Labels: On</button><button type="button" id="groupbtn" class="linkbtn">Grouping: Off</button><button type="button" id="themebtn" class="linkbtn">Theme: Auto</button><button type="button" id="sharebtn" class="linkbtn">Share</button><button type="button" id="relbtn" class="linkbtn" aria-expanded="false">Release notes</button></span></div>
   <div id="top">
     <h1>Four Seasons hotels and resorts</h1>
     <div class="srch"><input id="q" placeholder="Search by name" aria-label="Search by name"><button type="button" id="filterbtn" class="btn">Filters</button></div>
@@ -317,6 +318,7 @@ table.hm.big thead th{font-size:12px;padding:8px 0}
   <div class="tabs"><button type="button" id="tabl" class="tab on">Properties</button><button type="button" id="tabw" class="tab">Weather summary</button><button type="button" id="tabt" class="tab">Trip (0)</button></div>
   <div id="notes" hidden>
     <h3>Release notes</h3>
+    <h4>v1.21</h4><ul><li>Travel times next to distances. Over 800 km: an estimated nonstop flight time (about 830 km/h plus 45 minutes). Under 300 km: drive time. From 300 to 800 km: both. Drive times come from a free public routing service, and a place with no road route (for example across water) shows only the flight estimate.</li><li>Shown in the Trip tab (both modes), the Near me list and Copy list. Flight times are estimates for a nonstop flight; many routes need connections.</li></ul>
     <h4>v1.20</h4><ul><li>Trip tab: new Add Four Seasons stops search box. Type a property, region or type (for example Bali, Asia, Resort) and tap a result to add it. Add all in view adds up to 30 properties at once.</li></ul>
     <h4>v1.19</h4><ul><li>The list sheet on phones now opens at about 50 percent of the screen.</li><li>Trip: pick any starting place (a city, one of the Four Seasons properties, or your location) and measure from it.</li><li>Trip has two modes: Stop to stop (a chain, optionally starting from your starting place) and From one place (each stop measured directly from the same place, drawn as spokes, with nearest and farthest).</li><li>Distances can be shown in km or miles.</li></ul>
     <h4>v1.18</h4><ul><li>Phone layout: the list sheet now opens at about 40 percent of the screen (drag the handle or tap it for smaller or full height).</li><li>Weather summary on phones: each property is a card with all 12 months in two rows of six, so nothing scrolls sideways. Each cell shows the month, temperature, season badge and rain bar.</li></ul>
@@ -752,9 +754,9 @@ function stats(n){
 }
 function renderList(){
   var idx=filtered(true),h='';
-  idx.forEach(function(i){
+  idx.forEach(function(i,k){
     var d=D[i];
-    h+='<div class="it min" data-i="'+i+'"><span class="dot" style="background:'+cols[d.r]+'"></span><span class="nm">'+esc(d.n)+'</span>'+(fav.has(d.n)?'<span class="mk" title="Favorite">&#9733;</span>':'')+(vis.has(d.n)?'<span class="mk v" title="Visited">&#10003;</span>':'')+(trip.indexOf(d.n)>=0?'<span class="mk t">trip</span>':'')+(userPos?'<span class="km">'+km(hav(userPos,[d.la,d.lo]))+'</span>':'')+(wxOn?wxChip(d):'')+'</div>';
+    h+='<div class="it min" data-i="'+i+'"><span class="dot" style="background:'+cols[d.r]+'"></span><span class="nm">'+esc(d.n)+'</span>'+(fav.has(d.n)?'<span class="mk" title="Favorite">&#9733;</span>':'')+(vis.has(d.n)?'<span class="mk v" title="Visited">&#10003;</span>':'')+(trip.indexOf(d.n)>=0?'<span class="mk t">trip</span>':'')+(userPos?'<span class="km">'+(function(){var dd=hav(userPos,[d.la,d.lo]);return km(dd)+' - '+travelText(userPos,[d.la,d.lo],dd,true,k<6)})()+'</span>':'')+(wxOn?wxChip(d):'')+'</div>';
   });
   $('items').innerHTML=h||'<p class="note" style="padding:12px">'+((wxOn&&wxMode==='off'&&climState.loading)?'Loading climate data...':(viewOnly?'No properties in this map view. Zoom out or turn off "Only list what is in the map view".':'No properties match.'))+'</p>';
   stats(idx.length);
@@ -820,6 +822,55 @@ document.addEventListener('click',function(e){
   },1800);
 },true);
 
+
+/* ---- travel time estimates (flight formula, live road routing) ---- */
+function fmtDur(min){
+  min=Math.max(5,Math.round(min/5)*5);var h=Math.floor(min/60),m=min%60;
+  return h?(h+'h'+(m?' '+m+'m':'')):(m+'m');
+}
+var roadCache=ls('fs_road')||{},roadQ=[],roadBusy=false,roadTimer=null;
+function rkey(a,b){return [a[0],a[1],b[0],b[1]].map(function(x){return x.toFixed(2)}).join(',')}
+function roadInfo(a,b,fetchIt){
+  var k=rkey(a,b),c=roadCache[k];
+  if(c&&c.s==='err'&&Date.now()-c.t>300000)c=null;
+  if(c)return c;
+  if(!fetchIt)return null;
+  roadCache[k]={s:'pending'};roadQ.push({k:k,a:a,b:b});roadPump();
+  return roadCache[k];
+}
+function roadPump(){
+  if(roadBusy||!roadQ.length)return;
+  roadBusy=true;
+  var it=roadQ.shift(),dist=hav(it.a,it.b);
+  fetchT('https://router.project-osrm.org/route/v1/driving/'+it.a[1]+','+it.a[0]+';'+it.b[1]+','+it.b[0]+'?overview=false',9000).then(function(j){
+    if(j&&j.code==='Ok'&&j.routes&&j.routes[0]){
+      var r=j.routes[0],rk=r.distance/1000;
+      roadCache[it.k]=(rk>dist*2.5+30)?{s:'none'}:{s:'ok',min:r.duration/60,km:Math.round(rk)};
+    }else if(j&&j.code==='NoRoute')roadCache[it.k]={s:'none'};
+    else roadCache[it.k]={s:'err',t:Date.now()};
+  }).catch(function(){roadCache[it.k]={s:'err',t:Date.now()}}).then(function(){
+    roadBusy=false;
+    try{var keep={},q;for(q in roadCache)if(roadCache[q].s==='ok'||roadCache[q].s==='none')keep[q]=roadCache[q];ls('fs_road',keep)}catch(e){}
+    roadDirty();setTimeout(roadPump,300);
+  });
+}
+function roadDirty(){
+  clearTimeout(roadTimer);
+  roadTimer=setTimeout(function(){if(view==='trip')tripChanged(false);if(userPos)renderList()},250);
+}
+function travelText(a,b,dist,short,fetchIt){
+  if(fetchIt===undefined)fetchIt=true;
+  var fl=(short?'':'about ')+fmtDur(dist/830*60+45)+' flight';
+  if(dist>=800)return fl;
+  var r=roadInfo(a,b,fetchIt),dr;
+  if(r&&r.s==='none')return dist<300?('no road route - '+fl):fl;
+  if(r&&r.s==='ok')dr=(short?'':'about ')+fmtDur(r.min)+' drive';
+  else if(r&&r.s==='pending')dr=short?'checking...':'checking drive time...';
+  else dr=(short?'~':'about ')+fmtDur(dist*1.3/70*60)+' drive'+(short?'':' (rough)');
+  if(dist<300)return dr;
+  return dr+(short?' / ':' or ')+fl;
+}
+
 /* trip */
 function arc(a,b){
   var r=Math.PI/180,la1=a[0]*r,lo1=a[1]*r,la2=b[0]*r,lo2=b[1]*r;
@@ -849,11 +900,11 @@ function tripChanged(fit){
   if(!trip.length){
     h='<p class="note">Add stops with the search box above, or tap "+ Trip" on a property. "Stop to stop" chains the stops in order. "From one place" measures every stop directly from the starting place above.</p>';
   }else if(hub){
-    var items=trip.map(function(n){var d=D[NI[n]];return {n:n,dist:op?hav(op,[d.la,d.lo]):null}});
+    var items=trip.map(function(n){var d=D[NI[n]],pt=[d.la,d.lo];return {n:n,pt:pt,dist:op?hav(op,pt):null}});
     if(!op)h+='<p class="note">Set a starting place above to see distances.</p>';
     h+=items.map(function(it,p){
-      lines.push((op?origin.n+' to ':'')+'Four Seasons '+it.n+(it.dist!=null?': '+km(it.dist):''));
-      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(it.n)+'</b><small>'+(it.dist!=null?km(it.dist)+' from '+esc(origin.n):'')+'</small></div><div class="ibs">'+rm(p)+'</div></div>';
+      lines.push((op?origin.n+' to ':'')+'Four Seasons '+it.n+(it.dist!=null?': '+km(it.dist)+' ('+travelText(op,it.pt,it.dist)+')':''));
+      return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(it.n)+'</b><small>'+(it.dist!=null?km(it.dist)+' from '+esc(origin.n)+'<br>'+travelText(op,it.pt,it.dist):'')+'</small></div><div class="ibs">'+rm(p)+'</div></div>';
     }).join('');
     if(op){
       var ds=items.slice().sort(function(a,b2){return a.dist-b2.dist}),nr=ds[0],fr=ds[ds.length-1];
@@ -864,8 +915,8 @@ function tripChanged(fit){
     var tot=0,prevOrigin=useO,pts=(useO?[op]:[]).concat(sp);
     h+=trip.map(function(n,p){
       var k=useO?p+1:p,leg=k>0?hav(pts[k-1],pts[k]):0;tot+=leg;
-      var sub=k>0?(km(leg)+' from '+(p===0&&useO?esc(origin.n):'previous')):'Start';
-      lines.push((p+1)+'. Four Seasons '+n+(k>0?' - '+km(leg):' (start)'));
+      var sub=k>0?(km(leg)+' from '+(p===0&&useO?esc(origin.n):'previous')+'<br>'+travelText(pts[k-1],pts[k],leg)):'Start';
+      lines.push((p+1)+'. Four Seasons '+n+(k>0?' - '+km(leg)+' ('+travelText(pts[k-1],pts[k],leg)+')':' (start)'));
       return '<div class="tr"><div class="n">'+(p+1)+'</div><div><b>'+esc(n)+'</b><small>'+sub+'</small></div><div class="ibs"><button type="button" class="ib" data-act="up" data-p="'+p+'" aria-label="Move up">&#8593;</button><button type="button" class="ib" data-act="down" data-p="'+p+'" aria-label="Move down">&#8595;</button>'+rm(p)+'</div></div>';
     }).join('');
     if(useO)lines.unshift('Start: '+origin.n);
